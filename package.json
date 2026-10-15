@@ -47,7 +47,11 @@
     },
     "portable": {
       "requestExecutionLevel": "user"
-    }
+    },
+    "electronLanguages": [
+      "ru",
+      "en-US"
+    ]
   },
   "dependencies": {
     "@fontsource/nunito": "^5.3.0",

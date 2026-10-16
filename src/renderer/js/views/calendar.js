@@ -6,6 +6,7 @@ import { taskRow } from './common.js';
 import { editTask } from './tasks.js';
 import { steps, stepState } from '../launch-model.js';
 import { navigate } from '../router.js';
+import { canOpen, isOpened, openArt, artThumb } from './art.js';
 
 const now = new Date();
 let viewYear = now.getFullYear();
@@ -148,6 +149,21 @@ export function renderCalendar(root) {
         ondblclick: () => editEvent(null, c.key),
       },
       h('span', { class: 'cal-day' }, c.day),
+      canOpen(c.key)
+        ? h(
+            'span',
+            {
+              class: `cal-egg${isOpened(c.key) ? ' seen' : ''}`,
+              title: t('art.ofTheDay'),
+              role: 'button',
+              onclick: (e) => {
+                e.stopPropagation();
+                openArt(c.key);
+              },
+            },
+            '🎨',
+          )
+        : null,
       h(
         'div',
         { class: 'cal-pills' },
@@ -222,6 +238,7 @@ export function renderCalendar(root) {
         { class: 'card day-panel' },
         h('h2', {}, longDate(selected)),
         selected === today ? h('div', { class: 'muted small' }, t('date.today')) : null,
+        artThumb(selected, () => openArt(selected)),
         h('div', { class: 'day-section-title' }, t('cal.events')),
         dayEvents.length
           ? dayEvents.map((e) =>

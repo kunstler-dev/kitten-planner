@@ -521,4 +521,17 @@ export default {
   'chat.apiHint':
     'API-Modus: Gespräche bleiben in der App, und die Assistentin kennt deine Pläne, Gründungsschritte und Produkte.',
   'chat.promptCopied': 'Anfrage kopiert — füge sie in ChatGPT ein (Strg+V)',
+  "art.title": "Gemälde des Tages",
+  "art.ofTheDay": "Gemälde des Tages",
+  "art.locked": "Das Gemälde dieses Tages öffnet sich am {date}",
+  "art.surprise": "Hier versteckt sich ein Gemälde ✨",
+  "art.clickToOpen": "Klicken, um das Osterei zu öffnen",
+  "art.noImage": "Das Bild wird geladen, sobald Internet verfügbar ist",
+  "art.year": "Jahr",
+  "art.style": "Stil",
+  "art.medium": "Technik",
+  "art.where": "Heute in",
+  "art.prev": "Vorheriger Tag",
+  "art.next": "Nächster Tag",
+  "art.counter": "{n} von {total} geöffnet",
 };

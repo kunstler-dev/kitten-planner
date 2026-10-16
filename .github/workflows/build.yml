@@ -23,6 +23,8 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm test
+      - name: Verify painting-of-the-day images resolve on Wikipedia
+        run: node scripts/fetch-art.js --check --strict
       - name: E2E (Electron + Playwright)
         run: xvfb-run -a npx playwright test
         env:
@@ -46,6 +48,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Download painting-of-the-day images
+        run: node scripts/fetch-art.js
       - name: Build portable .exe
         run: npx electron-builder --win portable --x64 --publish never
         env:

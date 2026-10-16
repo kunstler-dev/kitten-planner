@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const { app, BrowserWindow, ipcMain, shell, dialog, safeStorage, Menu, session } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog, safeStorage, Menu, session, net } = require('electron');
 const { Store, normalize } = require('./store');
 const { Secrets } = require('./secrets');
 const { streamChat, testKey } = require('./openai');
@@ -193,6 +193,31 @@ function registerIpc() {
   ipcMain.handle('chat:abort', (_e, id) => {
     activeChats.get(id)?.abort();
     return true;
+  });
+
+  // Painting-of-the-day images: bundled with the build, else cached, else fetched once from Wikipedia.
+  ipcMain.handle('art:image', async (_e, { id, wiki }) => {
+    const safeId = String(id).replace(/[^a-z0-9-]/gi, '');
+    const toDataUrl = (file) => `data:image/jpeg;base64,${fs.readFileSync(file).toString('base64')}`;
+    const bundled = path.join(__dirname, '..', 'renderer', 'assets', 'art', `${safeId}.jpg`);
+    if (fs.existsSync(bundled)) return toDataUrl(bundled);
+    const cacheDir = path.join(app.getPath('userData'), 'art-cache');
+    const cached = path.join(cacheDir, `${safeId}.jpg`);
+    if (fs.existsSync(cached)) return toDataUrl(cached);
+    try {
+      const headers = { 'User-Agent': 'KittenPlanner/1.0 (https://github.com/kunstler-dev/kitten-planner)' };
+      const api = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages&piprop=thumbnail&pithumbsize=900&redirects=1&titles=${encodeURIComponent(wiki)}`;
+      const info = await (await net.fetch(api, { headers })).json();
+      const src = info.query?.pages?.[0]?.thumbnail?.source;
+      if (!src) return null;
+      const res = await net.fetch(src, { headers });
+      if (!res.ok) return null;
+      fs.mkdirSync(cacheDir, { recursive: true });
+      fs.writeFileSync(cached, Buffer.from(await res.arrayBuffer()));
+      return toDataUrl(cached);
+    } catch {
+      return null;
+    }
   });
 
   ipcMain.handle('gpt:logout', async () => {

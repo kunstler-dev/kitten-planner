@@ -6,8 +6,17 @@ import { taskRow, sortTasks, progressBar } from './common.js';
 import { progress, nextSteps } from '../launch-model.js';
 import { monthTotals } from './finance.js';
 import { navigate } from '../router.js';
+import { openArt } from './art.js';
 
 const IDEA_COUNT = 10;
+
+const greetText = (name) => (name ? t('home.greetName', { greet: greeting(), name }) : `${greeting()}!`);
+
+// Keep the greeting in sync with the time of day while the app stays open.
+setInterval(() => {
+  const el = document.getElementById('greeting');
+  if (el) el.textContent = greetText(state.data.profile.name?.trim());
+}, 60000);
 
 export function renderHome(root) {
   const d = state.data;
@@ -103,9 +112,10 @@ export function renderHome(root) {
       h(
         'div',
         {},
-        h('h1', {}, name ? t('home.greetName', { greet: greeting(), name }) : `${greeting()}!`),
+        h('h1', { id: 'greeting' }, greetText(name)),
         h('div', { class: 'muted' }, longDate(today)),
       ),
+      h('button', { class: 'btn btn-soft', onclick: () => openArt(today) }, '🎨', t('art.ofTheDay')),
     ),
     h(
       'div',

@@ -14,8 +14,8 @@
 }
 .kitten-shadow {
   position: absolute;
-  width: 74px;
-  height: 14px;
+  width: 40px;
+  height: 9px;
   margin-top: 0;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(70, 50, 80, 0.28), transparent);
@@ -25,7 +25,7 @@
   position: absolute;
   font-weight: 800;
   color: var(--lav-400);
-  font-size: 14px;
+  font-size: 11px;
   opacity: 0;
 }
 .kitten-zzz span {
@@ -52,8 +52,8 @@
 
 /* ---------- flat SVG fallback ---------- */
 .kitten-svg-wrap {
-  width: 100px;
-  height: 76px;
+  width: 56px;
+  height: 43px;
   position: relative;
 }
 .kitten-svg {
@@ -299,7 +299,7 @@
   z-index: 41;
   pointer-events: none;
   color: var(--pink-500);
-  font-size: 17px;
+  font-size: 13px;
   animation: heart 1.4s ease-out forwards;
 }
 @keyframes heart {
@@ -321,4 +321,30 @@
   .kitten-press {
     animation: none;
   }
+}
+
+/* Auerilus the robot (AI tab) */
+#robot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 39;
+  pointer-events: none;
+  will-change: transform;
+}
+#robot canvas {
+  display: block;
+  position: relative;
+}
+#robot[data-state='sleep'] .kitten-zzz {
+  opacity: 1;
+  animation: zzz 2.4s ease-in-out infinite;
+}
+.robot-shadow {
+  width: 44px;
+}
+.robot-fallback {
+  font-size: 32px;
+  line-height: 1;
+  position: relative;
 }

@@ -500,4 +500,21 @@ export default {
   'set.importError': 'Не вдалося прочитати файл',
   'set.backupHint': 'API-ключ і файли документів не потрапляють у резервну копію.',
   'set.version': 'Версія {v}',
+  'chat.modeAccount': 'Мій акаунт ChatGPT',
+  'chat.modeApi': 'API-ключ',
+  'chat.playground': 'Майданчик Ауерилуса',
+  'chat.playgroundSub': 'Робот Ауерилус грається з котиком у квача',
+  'chat.gptTitle': 'ChatGPT у твоєму акаунті',
+  'chat.gptHelp':
+    'Увійди справа у свій акаунт ChatGPT (e-mail, Google, Microsoft або Apple). Вхід запамʼятовується — наступного разу одразу відкриється твій чат.',
+  'chat.gptPrivacy':
+    'Сторінка chatgpt.com працює в окремому захищеному вікні; програма не бачить твій пароль і листування.',
+  'chat.gptBrowser': 'Відкрити в браузері',
+  'chat.gptLogout': 'Вийти з акаунта',
+  'chat.gptLogoutConfirm': 'Вийти з акаунта ChatGPT на цьому компʼютері?',
+  'chat.gptLoading': 'Завантажую chatgpt.com… Потрібен інтернет.',
+  'chat.back': 'Назад',
+  'chat.reload': 'Оновити',
+  'chat.apiHint': 'Режим API: розмови зберігаються в програмі, а помічник бачить твої плани, кроки запуску та товари.',
+  'chat.promptCopied': 'Запит скопійовано — встав його в ChatGPT (Ctrl+V)',
 };

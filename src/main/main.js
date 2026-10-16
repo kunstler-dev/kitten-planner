@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const { app, BrowserWindow, ipcMain, shell, dialog, safeStorage, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog, safeStorage, Menu, session } = require('electron');
 const { Store, normalize } = require('./store');
 const { Secrets } = require('./secrets');
 const { streamChat, testKey } = require('./openai');
@@ -22,6 +22,63 @@ app.commandLine.appendSwitch('lang', savedLang === 'de' ? 'de' : 'uk');
 app.commandLine.appendSwitch('enable-unsafe-swiftshader');
 
 const isDev = process.argv.includes('--dev');
+
+// Embedded ChatGPT (her own account): a sandboxed <webview> with its own persistent session.
+const GPT_PARTITION = 'persist:chatgpt';
+const GPT_HOSTS = [/(^|\.)chatgpt\.com$/, /(^|\.)openai\.com$/, /(^|\.)oaistatic\.com$/, /(^|\.)oaiusercontent\.com$/];
+const AUTH_HOSTS = [
+  /^accounts\.google\.com$/,
+  /(^|\.)googleusercontent\.com$/,
+  /^login\.live\.com$/,
+  /^login\.microsoftonline\.com$/,
+  /^appleid\.apple\.com$/,
+  /(^|\.)cloudflare\.com$/,
+];
+function hostMatches(url, list) {
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' && list.some((re) => re.test(u.hostname));
+  } catch {
+    return false;
+  }
+}
+const isGptUrl = (url) => hostMatches(url, GPT_HOSTS);
+const isGptOrAuthUrl = (url) => hostMatches(url, GPT_HOSTS) || hostMatches(url, AUTH_HOSTS);
+
+app.on('web-contents-created', (_e, contents) => {
+  // Only the ChatGPT webview may be attached, never with node access or a preload.
+  contents.on('will-attach-webview', (event, webPreferences, params) => {
+    delete webPreferences.preload;
+    webPreferences.nodeIntegration = false;
+    webPreferences.contextIsolation = true;
+    webPreferences.sandbox = true;
+    if (params.partition !== GPT_PARTITION || !isGptUrl(params.src)) event.preventDefault();
+  });
+  if (contents.getType() !== 'webview') return;
+  contents.setWindowOpenHandler(({ url }) => {
+    // Sign-in popups (Google / Microsoft / Apple) open as small windows sharing the ChatGPT session.
+    if (isGptOrAuthUrl(url)) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          width: 520,
+          height: 720,
+          parent: mainWindow,
+          autoHideMenuBar: true,
+          webPreferences: { partition: GPT_PARTITION, sandbox: true, contextIsolation: true, nodeIntegration: false },
+        },
+      };
+    }
+    if (/^https?:\/\//.test(url)) shell.openExternal(url);
+    return { action: 'deny' };
+  });
+  contents.on('will-navigate', (event, url) => {
+    if (!isGptOrAuthUrl(url)) {
+      event.preventDefault();
+      if (/^https?:\/\//.test(url)) shell.openExternal(url);
+    }
+  });
+});
 let secrets;
 let mainWindow;
 const activeChats = new Map();
@@ -50,6 +107,7 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: true,
       spellcheck: true,
+      webviewTag: true,
     },
   });
 
@@ -134,6 +192,15 @@ function registerIpc() {
   });
   ipcMain.handle('chat:abort', (_e, id) => {
     activeChats.get(id)?.abort();
+    return true;
+  });
+
+  ipcMain.handle('gpt:logout', async () => {
+    await session.fromPartition(GPT_PARTITION).clearStorageData();
+    return true;
+  });
+  ipcMain.handle('app:open-external', (_e, url) => {
+    if (/^https:\/\//.test(url)) shell.openExternal(url);
     return true;
   });
 
@@ -239,6 +306,10 @@ if (!gotLock) {
 
   app.whenReady().then(() => {
     Menu.setApplicationMenu(null);
+    // Look like regular Chrome to the ChatGPT / Google sign-in pages.
+    session
+      .fromPartition(GPT_PARTITION)
+      .setUserAgent(app.userAgentFallback.replace(/ Electron\/\S+/, '').replace(/ kitten-planner\/\S+/i, ''));
     secrets = new Secrets(app.getPath('userData'), safeStorage);
     registerIpc();
     createWindow();

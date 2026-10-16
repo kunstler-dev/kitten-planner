@@ -1,7 +1,7 @@
 // Flat SVG kitten — fallback renderer when WebGL is unavailable.
 
 const SVG = `
-<svg class="kitten-svg" viewBox="0 0 84 64" width="100" height="76" aria-hidden="true">
+<svg class="kitten-svg" viewBox="0 0 84 64" width="56" height="43" aria-hidden="true">
   <g class="k-tail"><path d="M18 40 C 8 38, 4 28, 8 16" /></g>
   <g class="k-legs-back">
     <rect class="k-leg k-leg-a" x="21" y="40" width="7" height="15" rx="3.5"/>
@@ -43,8 +43,8 @@ export function createKittenSvg() {
   const inner = el.firstElementChild;
   return {
     el,
-    size: { w: 100, h: 76 },
-    feet: { x: 50, y: 74 },
+    size: { w: 56, h: 43 },
+    feet: { x: 28, y: 42 },
     setState(s) {
       // 'crouch' and 'jump' share the hop pose in the flat version
       el.dataset.state = s === 'crouch' ? 'idle' : s;

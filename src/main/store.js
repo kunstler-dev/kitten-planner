@@ -41,7 +41,10 @@ function defaultData() {
       chatUsesContext: true,
       lang: 'uk',
       theme: 'light',
+      chatMode: 'account',
     },
+    // Art calendar: dates (YYYY-MM-DD) whose painting was already opened.
+    art: { opened: {} },
   };
 }
 
@@ -75,6 +78,7 @@ function normalize(raw) {
     custom: Array.isArray(launch.custom) ? launch.custom : [],
   };
   out.settings = { ...base.settings, ...(raw.settings || {}) };
+  out.art = { opened: raw.art?.opened && typeof raw.art.opened === 'object' ? raw.art.opened : {} };
   out.version = DATA_VERSION;
   return out;
 }

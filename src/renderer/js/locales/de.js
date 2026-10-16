@@ -503,4 +503,22 @@ export default {
   'set.importError': 'Datei konnte nicht gelesen werden',
   'set.backupHint': 'API-Schlüssel und Dokumentdateien sind nicht in der Sicherung enthalten.',
   'set.version': 'Version {v}',
+  'chat.modeAccount': 'Mein ChatGPT-Konto',
+  'chat.modeApi': 'API-Schlüssel',
+  'chat.playground': 'Auerilus’ Spielplatz',
+  'chat.playgroundSub': 'Roboter Auerilus spielt Fangen mit dem Kätzchen',
+  'chat.gptTitle': 'ChatGPT mit deinem Konto',
+  'chat.gptHelp':
+    'Melde dich rechts mit deinem ChatGPT-Konto an (E-Mail, Google, Microsoft oder Apple). Die Anmeldung bleibt gespeichert — beim nächsten Mal öffnet sich direkt dein Chat.',
+  'chat.gptPrivacy':
+    'chatgpt.com läuft in einem eigenen, abgeschotteten Fenster; die App sieht weder Passwort noch Gespräche.',
+  'chat.gptBrowser': 'Im Browser öffnen',
+  'chat.gptLogout': 'Abmelden',
+  'chat.gptLogoutConfirm': 'Auf diesem Computer von ChatGPT abmelden?',
+  'chat.gptLoading': 'chatgpt.com wird geladen… Internet erforderlich.',
+  'chat.back': 'Zurück',
+  'chat.reload': 'Neu laden',
+  'chat.apiHint':
+    'API-Modus: Gespräche bleiben in der App, und die Assistentin kennt deine Pläne, Gründungsschritte und Produkte.',
+  'chat.promptCopied': 'Anfrage kopiert — füge sie in ChatGPT ein (Strg+V)',
 };

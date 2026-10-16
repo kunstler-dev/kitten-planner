@@ -33,6 +33,8 @@ contextBridge.exposeInMainWorld('api', {
   showDocument: invoke('docs:show'),
   removeDocument: invoke('docs:remove'),
 
+  gptLogout: invoke('gpt:logout'),
+  openExternal: invoke('app:open-external'),
   openDataFolder: invoke('app:open-data-folder'),
   appInfo: invoke('app:info'),
   setTheme: invoke('app:set-theme'),

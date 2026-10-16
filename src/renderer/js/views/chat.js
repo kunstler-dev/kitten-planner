@@ -1,4 +1,4 @@
-import { h, icon, toast, confirmDialog, emptyState } from '../ui.js';
+import { h, icon, toast, confirmDialog, emptyState, segmented } from '../ui.js';
 import { state, update, uid } from '../state.js';
 import { todayKey } from '../dates.js';
 import { t, tx, money } from '../i18n.js';
@@ -6,6 +6,8 @@ import { planProgress } from './common.js';
 import { createNote } from './notes.js';
 import { route } from '../router.js';
 import { progress, nextSteps } from '../launch-model.js';
+import { showGpt, hideGpt, gpt } from '../gpt-host.js';
+import { mountPlayground } from '../playground.js';
 
 export const MODELS = [
   { id: 'gpt-4o-mini', label: 'GPT-4o mini' },
@@ -192,10 +194,67 @@ function keySetup(onDone) {
   );
 }
 
+function playground() {
+  return h(
+    'div',
+    { class: 'playground' },
+    h('div', { class: 'playground-floor' }),
+    h('div', { class: 'playground-title' }, icon('sparkle', 14), t('chat.playground')),
+    h('div', { class: 'playground-sub' }, t('chat.playgroundSub')),
+  );
+}
+
+function accountMode() {
+  const frame = h('div', { class: 'gpt-frame' }, h('div', { class: 'muted small' }, t('chat.gptLoading')));
+  const side = h(
+    'div',
+    { class: 'card chat-side' },
+    h(
+      'div',
+      { class: 'gpt-tips' },
+      h('b', {}, t('chat.gptTitle')),
+      h('div', {}, t('chat.gptHelp')),
+      h('div', { class: 'muted small' }, t('chat.gptPrivacy')),
+      h(
+        'button',
+        { class: 'btn btn-soft small', onclick: () => window.api.openExternal(gpt.url()) },
+        icon('link', 14),
+        t('chat.gptBrowser'),
+      ),
+      h(
+        'button',
+        {
+          class: 'btn btn-ghost small',
+          onclick: async () => {
+            if (await confirmDialog(t('chat.gptLogoutConfirm'), { okText: t('chat.gptLogout') })) await gpt.logout();
+          },
+        },
+        t('chat.gptLogout'),
+      ),
+    ),
+    playground(),
+  );
+  const main = h(
+    'div',
+    { class: 'card chat-main' },
+    h(
+      'div',
+      { class: 'gpt-toolbar' },
+      h('button', { class: 'icon-btn', title: t('chat.back'), onclick: gpt.back }, icon('chevronLeft', 18)),
+      h('button', { class: 'icon-btn', title: t('chat.reload'), onclick: gpt.reload }, icon('sparkle', 16)),
+      h('button', { class: 'icon-btn', title: 'chatgpt.com', onclick: gpt.home }, icon('home', 16)),
+      h('span', { class: 'muted small' }, 'chatgpt.com'),
+    ),
+    frame,
+  );
+  return { layout: h('div', { class: 'chat-layout' }, side, main), frame, area: side.querySelector('.playground') };
+}
+
 export async function renderChat(root, params = {}) {
   rootRef = root;
-  if (!keyStatus) keyStatus = await window.api.keyStatus();
   const d = state.data;
+  const mode = d.settings.chatMode === 'api' ? 'api' : 'account';
+  if (mode === 'api' && !keyStatus) keyStatus = await window.api.keyStatus();
   if (!activeChatId || !activeChat()) activeChatId = d.chats[0]?.id || null;
 
   const header = h(
@@ -205,41 +264,78 @@ export async function renderChat(root, params = {}) {
     h(
       'div',
       { class: 'head-actions' },
-      h(
-        'label',
-        { class: 'toggle', title: t('chat.contextHint') },
-        h('input', {
-          type: 'checkbox',
-          checked: d.settings.chatUsesContext,
-          onchange: (e) => update((x) => (x.settings.chatUsesContext = e.target.checked), { silent: true }),
-        }),
-        h('span', { class: 'toggle-track' }),
-        h('span', { class: 'small' }, t('chat.useContext')),
-      ),
-      h(
-        'select',
-        {
-          class: 'input select-sm',
-          title: t('chat.model'),
-          onchange: (e) => update((x) => (x.settings.model = e.target.value), { silent: true }),
+      mode === 'api'
+        ? h(
+            'label',
+            { class: 'toggle', title: t('chat.contextHint') },
+            h('input', {
+              type: 'checkbox',
+              checked: d.settings.chatUsesContext,
+              onchange: (e) => update((x) => (x.settings.chatUsesContext = e.target.checked), { silent: true }),
+            }),
+            h('span', { class: 'toggle-track' }),
+            h('span', { class: 'small' }, t('chat.useContext')),
+          )
+        : null,
+      mode === 'api'
+        ? h(
+            'select',
+            {
+              class: 'input select-sm',
+              title: t('chat.model'),
+              onchange: (e) => update((x) => (x.settings.model = e.target.value), { silent: true }),
+            },
+            MODELS.map((m) => h('option', { value: m.id, selected: m.id === d.settings.model }, m.label)),
+            MODELS.some((m) => m.id === d.settings.model)
+              ? null
+              : h('option', { value: d.settings.model, selected: true }, d.settings.model),
+          )
+        : null,
+      segmented(
+        [
+          { value: 'account', label: t('chat.modeAccount') },
+          { value: 'api', label: t('chat.modeApi') },
+        ],
+        mode,
+        (v) => {
+          update((x) => (x.settings.chatMode = v), { silent: true });
+          renderChat(root);
         },
-        MODELS.map((m) => h('option', { value: m.id, selected: m.id === d.settings.model }, m.label)),
-        MODELS.some((m) => m.id === d.settings.model)
-          ? null
-          : h('option', { value: d.settings.model, selected: true }, d.settings.model),
       ),
     ),
   );
 
+  if (mode === 'account') {
+    const { layout, frame, area } = accountMode();
+    root.replaceChildren(header, layout);
+    showGpt(frame);
+    mountPlayground(area);
+    if (params.prompt) {
+      navigator.clipboard.writeText(params.prompt);
+      toast(t('chat.promptCopied'), 'success');
+      route.params = {};
+    }
+    return;
+  }
+  hideGpt();
+
   if (!keyStatus.hasKey) {
+    const pg = playground();
     root.replaceChildren(
       header,
-      keySetup(() => renderChat(root)),
+      h(
+        'div',
+        { class: 'chat-layout' },
+        h('div', { class: 'card chat-side' }, h('div', { class: 'muted small' }, t('chat.apiHint')), pg),
+        keySetup(() => renderChat(root)),
+      ),
     );
+    mountPlayground(pg);
     return;
   }
 
   const chat = activeChat();
+  const pg = playground();
   const side = h(
     'div',
     { class: 'card chat-side' },
@@ -279,8 +375,8 @@ export async function renderChat(root, params = {}) {
         ),
       ),
     ),
+    pg,
   );
-
   const messages = h('div', { class: 'chat-messages' });
   const list = chat?.messages || [];
   if (!list.length && !streaming) {

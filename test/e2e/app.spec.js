@@ -147,6 +147,7 @@ test('notes and calendar', async () => {
   await page.fill('.modal input[type="time"] >> nth=0', '14:30');
   await page.click('.modal .modal-actions .btn-primary');
   await expect(page.locator('.cal-pill').first()).toContainText('Огляд');
+  await page.waitForTimeout(500);
   await snap(page, '08-calendar');
 });
 

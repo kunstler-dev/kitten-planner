@@ -110,7 +110,7 @@ export function renderHome(root) {
       'div',
       { class: 'page-head' },
       h('div', {}, h('h1', { id: 'greeting' }, greetText(name)), h('div', { class: 'muted' }, longDate(today))),
-      h('button', { class: 'btn btn-soft', onclick: () => openArt(today) }, '🎨', t('art.ofTheDay')),
+      h('button', { class: 'btn btn-soft', onclick: () => openArt(today) }, `🎨 ${t('art.ofTheDay')}`),
     ),
     h(
       'div',

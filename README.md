@@ -1,5 +1,10 @@
 # Kitten Planner 🐾
 
+[![Build](https://github.com/kunstler-dev/kitten-planner/actions/workflows/build.yml/badge.svg)](https://github.com/kunstler-dev/kitten-planner/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/kunstler-dev/kitten-planner)](https://github.com/kunstler-dev/kitten-planner/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-lavender.svg)](LICENSE)
+![Platform](https://img.shields.io/badge/platform-Windows-blue)
+
 A cozy but focused **Windows desktop workspace** for a founder opening a small
 **bookbinding workshop & souvenir shop** (handmade faux-leather notebooks and books) in
 the old town of **Coburg, Bavaria**. It bundles a step-by-step launch roadmap for German
@@ -27,14 +32,17 @@ All data stays **on the local machine**.
 | **Painting of the day**      | Every calendar day from October 2026 to the end of 2027 hides an easter egg: one of ~470 famous paintings (Old Masters to early modernism) with a bilingual story — style, how and where it was painted, its history and where it hangs today. Holidays and artists' birthdays get fitting pieces. Images are downloaded from Wikimedia Commons at build time (public-domain works only) and bundled into the `.exe`.                                                                                                                                                                             |
 | **3D kitten**                | A small tortoiseshell toon kitten (three.js, built from primitives): calmly follows the cursor without getting in the way, **jumps onto the button you hover** while deciding where to go, falls asleep when the mouse rests, purrs with hearts when petted and plays with Auerilus in the AI tab. Never blocks clicks; falls back to a flat SVG kitten without WebGL. At the bottom of the sidebar a **pet corner** shows two more cats — Sefirka asleep on her cushion and tuxedo Gudsyk chasing a ball of yarn — and Bublyk the corgi dozing on his mat, who wakes up and wags when you hover. |
 
-|                                                     |                                                         |
-| --------------------------------------------------- | ------------------------------------------------------- |
-| ![Legal roadmap](docs/screenshots/launch-legal.png) | ![Workshop](docs/screenshots/workshop.png)              |
-| ![Finance](docs/screenshots/finance.png)            | ![German, dark theme](docs/screenshots/dark-german.png) |
+|                                                                     |                                                         |
+| ------------------------------------------------------------------- | ------------------------------------------------------- |
+| ![Legal roadmap](docs/screenshots/launch-legal.png)                 | ![Workshop](docs/screenshots/workshop.png)              |
+| ![Finance](docs/screenshots/finance.png)                            | ![German, dark theme](docs/screenshots/dark-german.png) |
+| ![Calendar with painting of the day](docs/screenshots/calendar.png) | ![AI tab with Auerilus](docs/screenshots/ai-tab.png)    |
+
+<p align="center"><img src="docs/screenshots/pets.png" alt="Pet corner: Sefirka, Gudsyk and Bublyk the corgi" width="312"></p>
 
 ## Download
 
-Grab `KittenPlanner-<version>-portable.exe` from **Releases**, or the `KittenPlanner-windows`
+Grab `KittenPlanner-<version>-portable.exe` from the [latest release](https://github.com/kunstler-dev/kitten-planner/releases/latest), or the `KittenPlanner-windows`
 artifact of the latest **Build** workflow run. It is a portable app: no installation, just run it.
 The build is not code-signed, so Windows SmartScreen asks once (_More info → Run anyway_).
 

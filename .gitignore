@@ -4,5 +4,5 @@ test-results/
 playwright-report/
 *.log
 .DS_Store
-screenshots/
+/screenshots/
 src/renderer/assets/art/

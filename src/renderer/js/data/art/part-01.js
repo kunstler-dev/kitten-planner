@@ -231,6 +231,7 @@ export default [
   {
     id: 'harvesters',
     wiki: 'The Harvesters',
+    q: 'Pieter Bruegel the Elder The Harvesters 1565',
     a: 'bruegel',
     y: '1565',
     t: x('Жнива', 'Die Kornernte'),
@@ -259,6 +260,7 @@ export default [
   {
     id: 'blind-leading-blind',
     wiki: 'The Blind Leading the Blind (Bruegel)',
+    q: 'Pieter Bruegel Parable of the Blind Capodimonte 1568',
     a: 'bruegel',
     y: '1568',
     t: x('Сліпі', 'Der Blindensturz'),

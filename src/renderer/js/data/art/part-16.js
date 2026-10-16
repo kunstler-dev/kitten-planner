@@ -136,6 +136,7 @@ export default [
   {
     id: 'munch-dance-life',
     wiki: 'The Dance of Life',
+    q: 'Edvard Munch The Dance of Life 1899 1900',
     a: 'munch',
     y: '1899–1900',
     t: x('Танець життя', 'Der Tanz des Lebens'),
@@ -324,6 +325,7 @@ export default [
   {
     id: 'mucha-gismonda',
     wiki: 'Gismonda (Mucha)',
+    q: 'Alfons Mucha Gismonda Sarah Bernhardt poster',
     a: 'mucha',
     y: '1894–1895',
     t: x('«Ґісмонда» (афіша)', '„Gismonda“ (Plakat)'),
@@ -338,6 +340,7 @@ export default [
   {
     id: 'mucha-seasons',
     wiki: 'The Seasons (Mucha)',
+    q: 'Alfons Mucha The Seasons 1896 lithograph',
     a: 'mucha',
     y: '1896',
     t: x('Пори року', 'Die Jahreszeiten'),

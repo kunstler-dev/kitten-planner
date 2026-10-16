@@ -6,6 +6,7 @@ export default [
   {
     id: 'marc-large-blue-horses',
     wiki: 'The Large Blue Horses',
+    q: 'Franz Marc Die großen blauen Pferde 1911',
     a: 'marc',
     y: '1911',
     t: x('Великі сині коні', 'Die großen blauen Pferde'),
@@ -62,6 +63,7 @@ export default [
   {
     id: 'macke-lady-green-jacket',
     wiki: 'Lady in a Green Jacket',
+    q: 'August Macke Dame in grüner Jacke',
     a: 'macke',
     y: '1913',
     t: x('Жінка в зеленому жакеті', 'Dame in grüner Jacke'),
@@ -160,6 +162,7 @@ export default [
   {
     id: 'kirchner-potsdamer-platz',
     wiki: 'Potsdamer Platz (painting)',
+    q: 'Ernst Ludwig Kirchner Potsdamer Platz 1914 painting',
     a: 'kirchner',
     y: '1914',
     t: x('Потсдамська площа', 'Potsdamer Platz'),
@@ -272,6 +275,7 @@ export default [
   {
     id: 'modigliani-woman-fan',
     wiki: 'Woman with a Fan (Modigliani)',
+    q: 'Modigliani Woman with a Fan Lunia Czechowska',
     a: 'modigliani',
     y: '1919',
     t: x('Жінка з віялом', 'Frau mit Fächer'),
@@ -373,6 +377,7 @@ export default [
   {
     id: 'modersohn-sixth-anniversary',
     wiki: 'Self-Portrait on Her Sixth Wedding Anniversary',
+    q: 'Paula Modersohn-Becker Self-portrait sixth wedding anniversary',
     a: 'modersohn',
     y: '1906',
     t: x('Автопортрет у шосту річницю весілля', 'Selbstbildnis am 6. Hochzeitstag'),
@@ -387,6 +392,7 @@ export default [
   {
     id: 'modersohn-mother-child',
     wiki: 'Reclining Mother and Child',
+    q: 'Paula Modersohn-Becker Liegende Mutter mit Kind',
     a: 'modersohn',
     y: '1906',
     t: x('Лежача мати з дитиною', 'Liegende Mutter mit Kind'),

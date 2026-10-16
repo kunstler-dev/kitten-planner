@@ -306,6 +306,7 @@ export default [
   {
     id: 'merry-family',
     wiki: 'The Merry Family',
+    q: 'Jan Steen The Merry Family 1668 Rijksmuseum',
     a: 'steen',
     y: '1668',
     t: x('Весела родина', 'Die fröhliche Familie'),

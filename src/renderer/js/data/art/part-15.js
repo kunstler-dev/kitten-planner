@@ -342,6 +342,7 @@ export default [
   {
     id: 'three-ages',
     wiki: 'The Three Ages of Woman',
+    q: 'Gustav Klimt The Three Ages of Woman 1905',
     a: 'klimt',
     y: '1905',
     t: x('Три віки жінки', 'Die drei Lebensalter der Frau'),

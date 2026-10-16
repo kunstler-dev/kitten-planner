@@ -32,7 +32,8 @@ async function getJson(url) {
   throw new Error(`request failed: ${url}`);
 }
 
-const SKIP_FILE = /detail|crop|frame[ds]?\b|museum|gallery|room|exhibition|signature|x-?ray|sketch|study|photo/i;
+const SKIP_FILE =
+  /detail|ausschnitt|crop|frame[ds]?\b|museum|gallery|room|exhibition|signature|x-?ray|sketch|study|photo/i;
 
 /** Best bitmap on Wikimedia Commons for a free-text query, or null. */
 async function commonsSearch(query) {
@@ -74,8 +75,14 @@ async function main() {
   }
   for (const { p, why } of fallback) {
     const title = p.wiki.replace(/\s*\(.*\)$/, '');
-    const query = p.q || `${title} ${ARTISTS[p.a].name.de}`;
-    const hit = await commonsSearch(query);
+    const queries = [p.q, `${title} ${ARTISTS[p.a].name.de}`, `${title} ${ARTISTS[p.a].name.de.split(' ').pop()}`];
+    let hit = null;
+    let query = '';
+    for (const q of queries.filter(Boolean)) {
+      query = q;
+      hit = await commonsSearch(q);
+      if (hit) break;
+    }
     if (hit) {
       toDownload.push({ id: p.id, src: hit.src });
       console.log(`  COMMONS ${p.id}  ←  ${hit.file}   [${why}; query "${query}"]`);

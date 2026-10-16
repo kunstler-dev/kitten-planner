@@ -106,6 +106,7 @@ export default [
   {
     id: 'the-bolt',
     wiki: 'The Bolt',
+    q: 'Fragonard The Bolt Le Verrou Louvre',
     a: 'fragonard',
     y: 'бл. 1777',
     t: x('Засув', 'Der Riegel'),

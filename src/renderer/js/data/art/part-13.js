@@ -175,6 +175,7 @@ export default [
   {
     id: 'dance-class',
     wiki: 'The Dance Class (Degas)',
+    q: 'Degas The Dance Class 1874 Orsay',
     a: 'degas',
     y: '1873–1876',
     t: x('Урок танців', 'Die Tanzklasse'),
@@ -329,6 +330,7 @@ export default [
   {
     id: 'cassatt-boating',
     wiki: 'The Boating Party (Cassatt)',
+    q: 'Mary Cassatt The Boating Party 1893',
     a: 'cassatt',
     y: '1893–1894',
     t: x('Прогулянка на човні', 'Die Bootsfahrt'),

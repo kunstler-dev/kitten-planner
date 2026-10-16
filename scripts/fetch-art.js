@@ -1,5 +1,7 @@
-// Downloads the painting-of-the-day images from Wikipedia (free images only) into
-// src/renderer/assets/art/<id>.jpg so they ship inside the .exe and work offline.
+// Downloads the painting-of-the-day images into src/renderer/assets/art/<id>.jpg so they ship
+// inside the .exe and work offline. First choice is the lead image of the English Wikipedia article
+// (`wiki`, free images only); otherwise the best Wikimedia Commons search hit for the title + artist
+// (or the entry's own `q` query) is used. Every fallback is printed so it can be reviewed.
 // Usage: node scripts/fetch-art.js [--check] [--strict]
 //   --check   only resolve titles, don't download
 //   --strict  exit 1 if any painting has no free image
@@ -21,11 +23,36 @@ async function api(titles) {
   throw new Error(`Wikipedia API failed for ${titles[0]}…`);
 }
 
+async function getJson(url) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const res = await fetch(url, { headers: { 'User-Agent': UA } });
+    if (res.ok) return res.json();
+    await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+  }
+  throw new Error(`request failed: ${url}`);
+}
+
+const SKIP_FILE = /detail|crop|frame[ds]?\b|museum|gallery|room|exhibition|signature|x-?ray|sketch|study|photo/i;
+
+/** Best bitmap on Wikimedia Commons for a free-text query, or null. */
+async function commonsSearch(query) {
+  const url = `https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&generator=search&gsrnamespace=6&gsrlimit=8&gsrsearch=${encodeURIComponent(`${query} filetype:bitmap`)}&prop=imageinfo&iiprop=url|mime|size&iiurlwidth=900`;
+  const data = await getJson(url);
+  const pages = (data.query?.pages || []).sort((a, b) => a.index - b.index);
+  const ok = pages.filter((pg) => {
+    const ii = pg.imageinfo?.[0];
+    return ii && /jpeg|png/.test(ii.mime) && ii.width >= 500 && ii.height >= 300;
+  });
+  const best = ok.find((pg) => !SKIP_FILE.test(pg.title)) || ok[0];
+  return best ? { src: best.imageinfo[0].thumburl, file: best.title } : null;
+}
+
 async function main() {
-  const { PAINTINGS } = await import('../src/renderer/js/data/art/index.js');
+  const { PAINTINGS, ARTISTS } = await import('../src/renderer/js/data/art/index.js');
   fs.mkdirSync(outDir, { recursive: true });
   const missing = [];
   const toDownload = [];
+  const fallback = [];
   for (let i = 0; i < PAINTINGS.length; i += 40) {
     const batch = PAINTINGS.slice(i, i + 40);
     const data = await api(batch.map((p) => p.wiki));
@@ -41,9 +68,18 @@ async function main() {
     for (const p of batch) {
       const page = pages.get(resolve(p.wiki));
       const src = page?.thumbnail?.source;
-      if (!src) missing.push(`${p.id}  ←  "${p.wiki}"${page?.missing ? ' (no such article)' : ' (no free image)'}`);
-      else toDownload.push({ id: p.id, src });
+      if (src && !p.q) toDownload.push({ id: p.id, src });
+      else fallback.push({ p, why: p.q ? 'query' : page?.missing ? 'no such article' : 'no free image' });
     }
+  }
+  for (const { p, why } of fallback) {
+    const title = p.wiki.replace(/\s*\(.*\)$/, '');
+    const query = p.q || `${title} ${ARTISTS[p.a].name.de}`;
+    const hit = await commonsSearch(query);
+    if (hit) {
+      toDownload.push({ id: p.id, src: hit.src });
+      console.log(`  COMMONS ${p.id}  ←  ${hit.file}   [${why}; query "${query}"]`);
+    } else missing.push(`${p.id}  ←  "${query}" (${why}, nothing on Commons)`);
   }
   console.log(`paintings: ${PAINTINGS.length}, with image: ${toDownload.length}, missing: ${missing.length}`);
   for (const m of missing) console.log(`  MISSING ${m}`);

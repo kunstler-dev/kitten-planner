@@ -69,6 +69,7 @@ export default [
   {
     id: 'shevchenko-selfportrait',
     wiki: 'Taras Shevchenko',
+    q: 'Shevchenko self-portrait 1840',
     a: 'shevchenko',
     y: 'бл. 1840',
     t: x('Автопортрет', 'Selbstbildnis'),

@@ -144,9 +144,28 @@ test('notes and calendar', async () => {
   await snap(page, '08-calendar');
 });
 
-test('chat asks for the API key', async () => {
+test('calendar easter egg opens the painting of the day', async () => {
+  await go('home');
+  await page.click('.page-head button:has-text("🎨")');
+  await expect(page.locator('.art-modal .art-title')).not.toBeEmpty();
+  await expect(page.locator('.art-modal .art-text').first()).not.toBeEmpty();
+  await page.waitForTimeout(800);
+  await snap(page, '08b-art');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.art-modal')).toHaveCount(0);
+});
+
+test('AI tab: ChatGPT account mode with Auerilus, API mode asks for the key', async () => {
   await go('chat');
+  await expect(page.locator('.gpt-frame')).toBeVisible();
+  await expect(page.locator('#robot')).toBeVisible();
+  await page.waitForTimeout(1500);
+  await snap(page, '08c-chat-account');
+  await page.click('.page-head .segmented button >> nth=1');
   await expect(page.locator('.key-setup')).toBeVisible();
+  await expect(page.locator('#robot')).toBeVisible();
+  await page.click('.page-head .segmented button >> nth=0');
+  await expect(page.locator('.gpt-frame')).toBeVisible();
 });
 
 test('switch to German and dark theme from the top bar', async () => {
@@ -165,14 +184,12 @@ test('switch to German and dark theme from the top bar', async () => {
   await snap(page, '10-workshop-de-dark');
 });
 
-test('kitten jumps onto a button when the mouse rests', async () => {
+test('kitten jumps onto a button the user hovers', async () => {
   await go('home');
-  await page.mouse.move(900, 300);
-  await page.evaluate(() => {
-    window.__kpForcePlay = true;
-  });
-  await page.waitForFunction(() => document.querySelector('.kitten-perch, .kitten-bump'), null, { timeout: 30000 });
-  await snap(page, '11-kitten-play');
+  const box = await page.locator('[data-view="finance"]').boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 8 });
+  await page.waitForFunction(() => document.querySelector('.kitten-perch'), null, { timeout: 15000 });
+  await snap(page, '11-kitten-perch');
 });
 
 test('everything was saved to disk and no errors occurred', async () => {

@@ -37,6 +37,11 @@ bookbinding workshop + souvenir shop in Coburg (Bavaria, Germany).
 - `src/renderer/js/calc.js` — pure price calculation (unit-tested). `invoice-template.js` — German invoice HTML
   (always German, §14 UStG / §19 note) rendered to PDF by main (`pdf:save`).
 - Documents are copied to `userData/documents/<random>_<name>`; main validates names (no path traversal).
+- AI tab: `gpt-host.js` keeps one `<webview>` (partition `persist:chatgpt`, hosts allow-listed in main.js) laid over
+  a placeholder; API mode uses `openai.js`. `playground.js` + `robot3d.js` = robot Auerilus playing tag with the kitten.
+- Painting of the day: `data/art/part-*.js` entries `{ id, wiki, a, y, t, s, m, l, d }` (`wiki` = English Wikipedia
+  title, image resolved by `scripts/fetch-art.js` in CI and bundled to `assets/art/<id>.jpg`, gitignored), `pins.js`
+  (date → id), `index.js` schedule START..END. Unit test enforces one unique painting per day. **No Russian artists.**
 - Kitten: `kitten.js` (behaviour state machine: follow / approach / crouch / jump / perched; sleep & purr),
   `kitten3d.js` (three.js toon cat, poses lerped per frame), `kitten-svg.js` (fallback). It must never block clicks
   (`pointer-events: none`). Buttons it lands on get `.kitten-perch` / `.kitten-press` (they use the

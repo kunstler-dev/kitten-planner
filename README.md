@@ -4,8 +4,9 @@ A cozy but focused **Windows desktop workspace** for a founder opening a small
 **bookbinding workshop & souvenir shop** (handmade faux-leather notebooks and books) in
 the old town of **Coburg, Bavaria**. It bundles a step-by-step launch roadmap for German
 bureaucracy, a notebook configurator with cost & price calculation, simple bookkeeping
-with invoice PDFs, a document archive, a planner, a ChatGPT assistant — and a **3D kitten**
-that chases your cursor, naps, purrs and jumps onto buttons.
+with invoice PDFs, a document archive, a planner with a **painting-of-the-day** calendar, a ChatGPT
+assistant with a little robot named **Auerilus** — and a **3D kitten** that follows your cursor,
+naps, purrs and jumps onto the buttons you are about to click.
 
 The interface is in **Ukrainian** with a one-click switch to **German**, in a light or dark theme.
 All data stays **on the local machine**.
@@ -22,8 +23,9 @@ All data stays **on the local machine**.
 | **Finance**                  | Income/expense records with VAT rates, monthly chart, expenses by category, simplified EÜR, _Kleinunternehmer_ limit tracker (25 k€ / 100 k€), CSV export for the tax advisor, **invoices** with all §14 UStG fields rendered to **PDF** (paid invoices are booked automatically).                                                                                                                                                                                                                                   |
 | **Documents**                | Local archive of business paperwork with categories, search, attached files (copied into the app data folder) and deadline reminders that also appear on the dashboard and calendar.                                                                                                                                                                                                                                                                                                                                 |
 | **Plans · Calendar · Notes** | Goal-based task lists with progress, month calendar with events and deadlines from all sections, notes with colours, pinning and search.                                                                                                                                                                                                                                                                                                                                                                             |
-| **AI assistant**             | Streaming chat with the OpenAI API (bring your own key, stored encrypted via Windows DPAPI). Optionally includes the launch progress, tasks, events and products as context; answers can be saved as notes.                                                                                                                                                                                                                                                                                                          |
-| **3D kitten**                | A toon-shaded three.js kitten built from primitives: runs after the cursor, sleeps when you are idle, purrs with hearts when you rest the cursor on it, pushes cards and **jumps onto the chunky "pushable" buttons**, pressing them down. Falls back to a flat SVG kitten without WebGL.                                                                                                                                                                                                                            |
+| **AI assistant**             | Two modes: sign in to your own **ChatGPT account** inside the app (an isolated, persistent browser partition limited to chatgpt.com and its login providers), or use the OpenAI API with your own key (stored encrypted via Windows DPAPI, optional business context, answers can be saved as notes). The robot **Auerilus** lives in a little playground next to the chat and plays tag with the kitten.                                                                                                            |
+| **Painting of the day**      | Every calendar day from October 2026 to the end of 2027 hides an easter egg: one of ~470 famous paintings (Old Masters to early modernism) with a bilingual story — style, how and where it was painted, its history and where it hangs today. Holidays and artists' birthdays get fitting pieces. Images are downloaded from Wikimedia Commons at build time (public-domain works only) and bundled into the `.exe`.                                                                                                |
+| **3D kitten**                | A small tortoiseshell toon kitten (three.js, built from primitives): calmly follows the cursor without getting in the way, **jumps onto the button you hover** while deciding where to go, falls asleep when the mouse rests, purrs with hearts when petted and plays with Auerilus in the AI tab. Never blocks clicks; falls back to a flat SVG kitten without WebGL.                                                                                                                                               |
 
 |                                                     |                                                         |
 | --------------------------------------------------- | ------------------------------------------------------- |
@@ -64,6 +66,9 @@ src/renderer/
   js/calc.js         notebook cost/price calculation (pure, unit-tested)
   js/invoice-template.js   German invoice HTML for PDF export
   js/kitten.js       kitten behaviour;  kitten3d.js (three.js), kitten-svg.js (fallback)
+  js/robot3d.js      Auerilus;  playground.js  kitten + robot game;  gpt-host.js  ChatGPT webview
+  js/data/art/       painting-of-the-day entries (uk + de), schedule and pinned dates
+scripts/fetch-art.js resolves painting images via the Wikipedia API and bundles them
   js/views/          one module per section
 test/unit, test/e2e  node:test and Playwright suites
 ```

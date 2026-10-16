@@ -13,6 +13,7 @@ import { renderCalendar } from './views/calendar.js';
 import { renderChat, initChatEvents } from './views/chat.js';
 import { renderSettings } from './views/settings.js';
 import { initKitten } from './kitten.js';
+import { initSync } from './sync/sync.js';
 
 registerView('home', renderHome);
 registerView('legal', (root, params) => renderLaunch(root, { ...params, kind: 'legal' }));
@@ -38,6 +39,8 @@ onRoute(() => {
 });
 
 async function boot() {
+  // Phone/web build: no Electron preload, so install the browser implementation of window.api.
+  if (!window.api) await (await import('./platform/web.js')).installWebApi();
   await initState();
   setLang(state.data.settings.lang);
   document.documentElement.dataset.theme = state.data.settings.theme;
@@ -59,6 +62,7 @@ async function boot() {
     }
   });
   document.body.classList.add('ready');
+  initSync().catch(() => {});
 }
 
 boot();

@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.0 — on the phone, in sync
+
+- **Phone app**: the planner now also runs on the iPhone as an installable web app
+  (https://kunstler-dev.github.io/kitten-planner/ → Safari → _Share → Add to Home Screen_), with a phone layout,
+  offline start and the painting of the day.
+- **Sync through her own Google Drive**: computer and phone share all business data via the app's hidden Drive
+  folder. Edits made on both devices are merged record by record; attachments sync too. A cloud icon in the top
+  bar shows the state. Setup: [docs/google-sync.md](docs/google-sync.md).
+- On the phone the kitten trots along the bottom edge to wherever she taps; ChatGPT opens in the ChatGPT app.
+- Fixed a stray "null" under the commercial roadmap summary.
+
 ## v1.0.0 — first release
 
 **Download:** `KittenPlanner-1.0.0-portable.exe` below — a portable app, no installation needed.

@@ -30,6 +30,8 @@ jobs:
       - run: npm test
       - name: Verify painting-of-the-day images resolve on Wikipedia
         run: node scripts/fetch-art.js --check --strict
+      - name: Chromium for the phone-version tests
+        run: npx playwright install --with-deps chromium
       - name: E2E (Electron + Playwright)
         run: xvfb-run -a npx playwright test
         env:
@@ -55,6 +57,12 @@ jobs:
       - run: npm ci
       - name: Download painting-of-the-day images
         run: node scripts/fetch-art.js
+      - name: Google sync keys (from repository secrets)
+        run: node scripts/google-config.js
+        env:
+          GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
+          GOOGLE_DESKTOP_CLIENT_ID: ${{ secrets.GOOGLE_DESKTOP_CLIENT_ID }}
+          GOOGLE_DESKTOP_CLIENT_SECRET: ${{ secrets.GOOGLE_DESKTOP_CLIENT_SECRET }}
       - name: Build portable .exe
         run: npx electron-builder --win portable --x64 --publish never
         env:

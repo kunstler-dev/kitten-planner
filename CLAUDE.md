@@ -21,11 +21,22 @@ bookbinding workshop + souvenir shop in Coburg (Bavaria, Germany).
 - `src/main/main.js` — window, IPC, single-instance lock. `KITTEN_PLANNER_DATA_DIR` overrides userData (e2e).
   Chromium `--lang` follows the saved UI language; `enable-unsafe-swiftshader` keeps WebGL working without a GPU.
 - `src/main/store.js` — `data.json` (atomic write + `data.backup.json`). **Add every new top-level field to
-  `defaultData()`/`normalize()`.**
+  `defaultData()`/`normalize()` here and in `src/renderer/js/schema.js`** (unit test keeps them identical).
 - `src/main/secrets.js` — OpenAI key via `safeStorage`. Never put the key into `data.json` or the repo.
 - `src/main/openai.js` — streaming chat; errors carry a `code` (`no_key`, `bad_key`, `rate_limit`, `model`, `http`,
   `network`) that the renderer translates (`chat.err.*`).
-- `src/main/preload.js` — the only bridge (`window.api.*`). Renderer: sandbox, contextIsolation, CSP `connect-src 'none'`.
+- `src/main/preload.js` — the only bridge (`window.api.*`). Renderer: sandbox, contextIsolation, CSP `connect-src`
+  only `https://www.googleapis.com` (Drive sync).
+- **Phone version** = the same renderer as a PWA on GitHub Pages: without Electron, `app.js` installs
+  `js/platform/web.js` as `window.api` (IndexedDB, downloads, print-to-PDF, OAuth redirect). Any new `window.api`
+  method needs both implementations. `scripts/build-web.js` → `site/` (vendor paths rewritten, web CSP, manifest,
+  `sw.js` from `scripts/sw.template.js`); `.github/workflows/pages.yml` deploys it. Layout for phones lives in the
+  `@media (max-width: 820px)` block of `styles.css` (sidebar becomes a drawer behind `#menu-toggle`).
+- **Sync** (`js/sync/`): `drive.js` (appDataFolder client), `merge.js` (pure three-way merge; device-only settings
+  in `DEVICE_SETTINGS`), `sync.js` (engine, status for the top-bar cloud and the Settings card). Desktop sign-in:
+  `src/main/google.js` (loopback + PKCE, refresh token via safeStorage). Client ids come from
+  `src/google-config.json`, filled from GitHub secrets by `scripts/google-config.js` — never commit real values.
+  Setup guide: `docs/google-sync.md`.
 - `src/renderer/js/i18n.js` — `t(key, params)`, `tx({uk, de})` for content objects, `money()`.
   Strings live in `locales/uk.js` + `locales/de.js` (unit test enforces same keys + every static `t('…')` key exists;
   e2e fails on any `i18n missing` console warning, which covers template keys).
@@ -53,7 +64,7 @@ bookbinding workshop + souvenir shop in Coburg (Bavaria, Germany).
 
 - `npm start` / `npm run dev`
 - `npm run check` — eslint + prettier check + unit tests
-- `xvfb-run -a npx playwright test` — e2e on the real app; `SCREENSHOT_DIR=/dir` saves screenshots — **look at them
+- `xvfb-run -a npx playwright test` — e2e on the real app + `test/e2e/web.spec.js` (phone build, iPhone viewport, fake Drive); `SCREENSHOT_DIR=/dir` saves screenshots — **look at them
   after UI changes** (both languages, both themes).
 - `npm run icons` — regenerate icons from `build/icon.svg`.
 - Windows `.exe`: GitHub Actions `windows-latest` (artifact `KittenPlanner-windows`; tag `v*` or a manual run with `release: true` → GitHub Release `v<package.json version>`).

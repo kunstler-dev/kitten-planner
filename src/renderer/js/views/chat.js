@@ -204,6 +204,33 @@ function playground() {
   );
 }
 
+/** Phone/web: no embedded browser — ChatGPT opens in its own app (or Safari), Auerilus stays here. */
+function accountModeWeb() {
+  const area = playground();
+  const layout = h(
+    'div',
+    { class: 'chat-layout chat-web' },
+    h(
+      'div',
+      { class: 'card chat-side gpt-web' },
+      h(
+        'div',
+        { class: 'gpt-tips' },
+        h('b', {}, t('chat.gptWebTitle')),
+        h('div', {}, t('chat.gptWebHelp')),
+        h(
+          'button',
+          { class: 'btn btn-primary', onclick: () => window.api.openExternal('https://chatgpt.com/') },
+          icon('chat', 16),
+          t('chat.gptOpen'),
+        ),
+      ),
+    ),
+    h('div', { class: 'card chat-main' }, area),
+  );
+  return { layout, area };
+}
+
 function accountMode() {
   const frame = h('div', { class: 'gpt-frame' }, h('div', { class: 'muted small' }, t('chat.gptLoading')));
   const side = h(
@@ -306,10 +333,16 @@ export async function renderChat(root, params = {}) {
   );
 
   if (mode === 'account') {
-    const { layout, frame, area } = accountMode();
-    root.replaceChildren(header, layout);
-    showGpt(frame);
-    mountPlayground(area);
+    if (window.api.platform === 'web') {
+      const { layout, area } = accountModeWeb();
+      root.replaceChildren(header, layout);
+      mountPlayground(area);
+    } else {
+      const { layout, frame, area } = accountMode();
+      root.replaceChildren(header, layout);
+      showGpt(frame);
+      mountPlayground(area);
+    }
     if (params.prompt) {
       navigator.clipboard.writeText(params.prompt);
       toast(t('chat.promptCopied'), 'success');

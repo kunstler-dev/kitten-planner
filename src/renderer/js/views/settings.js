@@ -5,6 +5,8 @@ import { MODELS, resetKeyStatus, chatErrorText } from './chat.js';
 import { setKittenEnabled, setKittenSpeed } from '../kitten.js';
 import { setPetsEnabled } from '../pets.js';
 import { applyLang, applyTheme } from '../app-shell.js';
+import { syncStatus, onSyncStatus, syncNow, connectCloud, disconnectCloud, WEB_APP_URL } from '../sync/sync.js';
+import { relativeTime } from '../dates.js';
 
 const BUSINESS_FIELDS = [
   ['company', 'set.company', 'set.companyPlaceholder'],
@@ -18,7 +20,83 @@ const BUSINESS_FIELDS = [
   ['bic', 'set.bic', ''],
 ];
 
-export async function renderSettings(root) {
+const isWeb = () => window.api.platform === 'web';
+let unsubscribeSync = null;
+
+/** "Sync with the phone" card; repaints itself on sync status changes (never the whole page). */
+function syncCard() {
+  const card = h('section', { class: 'card sync-card', id: 'sync' });
+  const busy = h('div', { class: 'small muted' });
+  const paint = () => {
+    const st = syncStatus();
+    const connected = !['off', 'unconfigured'].includes(st.state);
+    const when = st.lastSync ? relativeTime(st.lastSync) : '';
+    card.replaceChildren(
+      h('h2', {}, icon('phone', 18), t('sync.title')),
+      h('div', { class: 'muted small' }, t('sync.intro')),
+      st.state === 'unconfigured'
+        ? h('div', { class: 'sync-note' }, t('sync.unconfigured'))
+        : connected
+          ? h(
+              'div',
+              { class: 'sync-row' },
+              h('span', { class: `sync-dot s-${st.state}` }),
+              h(
+                'div',
+                { class: 'sync-text' },
+                h('b', {}, t(`sync.state.${st.state}`, { when })),
+                st.email ? h('div', { class: 'muted small' }, t('sync.account', { email: st.email })) : null,
+              ),
+              h(
+                'div',
+                { class: 'btn-row' },
+                h('button', { class: 'btn btn-soft', onclick: () => syncNow() }, icon('cloudSync', 16), t('sync.now')),
+                h(
+                  'button',
+                  {
+                    class: 'btn btn-ghost',
+                    onclick: async () => {
+                      if (await confirmDialog(t('sync.disconnectConfirm'), { okText: t('sync.disconnect') }))
+                        await disconnectCloud();
+                    },
+                  },
+                  t('sync.disconnect'),
+                ),
+              ),
+            )
+          : h(
+              'div',
+              { class: 'btn-row' },
+              h(
+                'button',
+                {
+                  class: 'btn btn-primary',
+                  onclick: async () => {
+                    busy.textContent = isWeb() ? '' : t('sync.connecting');
+                    const ok = await connectCloud();
+                    busy.textContent = '';
+                    toast(ok ? t('sync.connected') : t('sync.connectFailed'), ok ? 'success' : 'error');
+                  },
+                },
+                icon('cloud', 16),
+                t('sync.connect'),
+              ),
+            ),
+      busy,
+      h(
+        'div',
+        { class: 'muted small sync-hint' },
+        isWeb() ? t('sync.phoneHintWeb') : t('sync.phoneHint', { url: WEB_APP_URL }),
+      ),
+    );
+  };
+  paint();
+  unsubscribeSync?.();
+  unsubscribeSync = onSyncStatus(() => (card.isConnected ? paint() : unsubscribeSync?.()));
+  return card;
+}
+
+export async function renderSettings(root, params = {}) {
   const d = state.data;
   const info = await window.api.appInfo();
   const key = await window.api.keyStatus();
@@ -216,21 +294,26 @@ export async function renderSettings(root) {
           ),
         ),
       ),
+      syncCard(),
       h(
         'section',
         { class: 'card' },
         h('h2', {}, t('set.data')),
-        h('div', { class: 'muted small' }, t('set.dataFolder')),
-        h('code', { class: 'path' }, info.dataDir),
+        isWeb()
+          ? h('div', { class: 'muted small' }, t('set.dataWeb'))
+          : h('div', { class: 'muted small' }, t('set.dataFolder')),
+        isWeb() ? null : h('code', { class: 'path' }, info.dataDir),
         h(
           'div',
           { class: 'btn-row' },
-          h(
-            'button',
-            { class: 'btn btn-soft', onclick: () => window.api.openDataFolder() },
-            icon('folder', 16),
-            t('set.openFolder'),
-          ),
+          isWeb()
+            ? null
+            : h(
+                'button',
+                { class: 'btn btn-soft', onclick: () => window.api.openDataFolder() },
+                icon('folder', 16),
+                t('set.openFolder'),
+              ),
           h(
             'button',
             {
@@ -280,4 +363,5 @@ export async function renderSettings(root) {
       ),
     ),
   );
+  if (params.section === 'sync') document.getElementById('sync')?.scrollIntoView({ block: 'center' });
 }

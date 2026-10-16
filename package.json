@@ -1,7 +1,7 @@
 {
   "name": "kitten-planner",
   "productName": "Kitten Planner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Cozy desktop workspace for launching a small bookbinding & souvenir shop: launch roadmaps, product configurator, finances, documents, planner, ChatGPT and a 3D kitten",
   "main": "src/main/main.js",
   "author": "kunstler-dev",

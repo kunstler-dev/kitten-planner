@@ -32,6 +32,20 @@ contextBridge.exposeInMainWorld('api', {
   openDocument: invoke('docs:open'),
   showDocument: invoke('docs:show'),
   removeDocument: invoke('docs:remove'),
+  hasDocument: invoke('docs:has'),
+  readDocument: invoke('docs:read'),
+  writeDocument: (stored, bytes) => ipcRenderer.invoke('docs:write', { stored, bytes }),
+
+  cloud: {
+    status: invoke('cloud:status'),
+    connect: invoke('cloud:connect'),
+    disconnect: invoke('cloud:disconnect'),
+    token: invoke('cloud:token'),
+  },
+  syncState: {
+    load: invoke('sync:load'),
+    save: invoke('sync:save'),
+  },
 
   artImage: invoke('art:image'),
   gptLogout: invoke('gpt:logout'),

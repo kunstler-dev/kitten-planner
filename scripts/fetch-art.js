@@ -15,21 +15,27 @@ const args = new Set(process.argv.slice(2));
 
 async function api(titles) {
   const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages&piprop=thumbnail&pithumbsize=900&redirects=1&titles=${encodeURIComponent(titles.join('|'))}`;
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await fetch(url, { headers: { 'User-Agent': UA } });
-    if (res.ok) return res.json();
-    await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
-  }
-  throw new Error(`Wikipedia API failed for ${titles[0]}…`);
+  return getJson(url);
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Wikimedia rate-limits bursts (429/503); back off, honouring Retry-After, before giving up.
 async function getJson(url) {
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await fetch(url, { headers: { 'User-Agent': UA } });
-    if (res.ok) return res.json();
-    await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+  let status = 'network error';
+  for (let attempt = 0; attempt < 7; attempt++) {
+    try {
+      const res = await fetch(url, { headers: { 'User-Agent': UA } });
+      if (res.ok) return await res.json();
+      status = String(res.status);
+      const retryAfter = Number(res.headers.get('retry-after'));
+      await sleep(retryAfter > 0 ? retryAfter * 1000 : Math.min(30000, 2000 * 2 ** attempt));
+    } catch (err) {
+      status = err.message;
+      await sleep(Math.min(30000, 2000 * 2 ** attempt));
+    }
   }
-  throw new Error(`request failed: ${url}`);
+  throw new Error(`request failed (${status}): ${url}`);
 }
 
 const SKIP_FILE =
@@ -80,6 +86,7 @@ async function main() {
     let query = '';
     for (const q of queries.filter(Boolean)) {
       query = q;
+      await sleep(250); // stay well under Wikimedia's request rate limits
       hit = await commonsSearch(q);
       if (hit) break;
     }

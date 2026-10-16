@@ -9,6 +9,11 @@
   folder. Edits made on both devices are merged record by record; attachments sync too. A cloud icon in the top
   bar shows the state. Setup: [docs/google-sync.md](docs/google-sync.md).
 - On the phone the kitten trots along the bottom edge to wherever she taps; ChatGPT opens in the ChatGPT app.
+- **Seasons**: autumn, Halloween, winter, Christmas, spring and summer looks (automatic by date or chosen in
+  Settings) with seasonal colours, falling leaves from trees, rain, snow, garland, petals, fireflies, bats and more —
+  every effect can be switched off — plus hats for the kitten and the pets and an optional ambient sound.
+- **3 November**: a birthday look and a greeting from all the pets.
+- **Painting quiz**: guess the artist or the painting across all 479 calendar paintings.
 - Fixed a stray "null" under the commercial roadmap summary.
 
 ## v1.0.0 — first release

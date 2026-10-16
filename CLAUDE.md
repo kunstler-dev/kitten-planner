@@ -55,6 +55,10 @@ bookbinding workshop + souvenir shop in Coburg (Bavaria, Germany).
   (date → id), `index.js` schedule START..END. Unit test enforces one unique painting per day. **No Russian artists.**
 - Pet corner (sidebar bottom): `pets.js` (persistent element, ~30 fps loop) + `pets3d.js` (one WebGL scene: two cats
   built with `buildCat()` from `kitten3d.js` and a corgi). Keep WebGL contexts few — the robot view is created once and reused.
+- Seasons (`js/seasons/`): `season.js` (pure: date → season, effects per season, pub/sub for outfits), `index.js`
+  (applies `html[data-season]`, effects, sound), `fx.js` (canvas behind the UI + SVG decor), `sound.js` (WebAudio),
+  `birthday.js` (3 Nov card). Palettes in `css/seasons.css`; 3D hats in `outfits.js` (`setOutfit` on each view).
+  Season/effect/sound settings are device-only (`DEVICE_SETTINGS`). Painting quiz: `views/quiz.js`.
 - Kitten: `kitten.js` (behaviour state machine: follow / approach / crouch / jump / perched; sleep & purr),
   `kitten3d.js` (three.js toon cat, poses lerped per frame), `kitten-svg.js` (fallback). It must never block clicks
   (`pointer-events: none`). Buttons it lands on get `.kitten-perch` / `.kitten-press` (they use the

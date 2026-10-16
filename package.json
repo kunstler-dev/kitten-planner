@@ -1,0 +1,74 @@
+{
+  "name": "kitten-planner",
+  "productName": "Kitten Planner",
+  "version": "1.0.0",
+  "description": "Cozy desktop workspace for launching a small bookbinding & souvenir shop: launch roadmaps, product configurator, finances, documents, planner, ChatGPT and a 3D kitten",
+  "main": "src/main/main.js",
+  "author": "kunstler-dev",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test \"test/unit/*.test.js\"",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm run format:check && npm test",
+    "icons": "node scripts/make-icons.js",
+    "dist:win": "electron-builder --win portable --x64",
+    "dist:dir": "electron-builder --dir"
+  },
+  "build": {
+    "appId": "dev.kunstler.kittenplanner",
+    "productName": "Kitten Planner",
+    "artifactName": "KittenPlanner-${version}-portable.exe",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json",
+      "!**/*.map",
+      "!node_modules/three/{examples,src,docs,editor,manual}/**",
+      "!node_modules/three/build/{three.cjs,three.module.min.js,three.core.min.js,three.webgpu*,three.tsl*}"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "requestExecutionLevel": "user"
+    },
+    "electronLanguages": [
+      "uk",
+      "de",
+      "en-US"
+    ]
+  },
+  "dependencies": {
+    "@fontsource/nunito": "^5.3.0",
+    "dompurify": "^3.4.17",
+    "marked": "^18.1.1",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.64",
+    "electron": "^44.7.2",
+    "electron-builder": "^26.15.3",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10"
+  }
+}

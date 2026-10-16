@@ -1,0 +1,385 @@
+/* Kitten container: positioned by kitten.js (feet anchored at the cursor-chasing point). */
+#kitten {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  pointer-events: none;
+  will-change: transform;
+  --run-speed: 0.32s;
+}
+#kitten canvas {
+  display: block;
+  position: relative;
+}
+.kitten-shadow {
+  position: absolute;
+  width: 40px;
+  height: 9px;
+  margin-top: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(70, 50, 80, 0.28), transparent);
+  transform-origin: 50% 50%;
+}
+.kitten-zzz {
+  position: absolute;
+  font-weight: 800;
+  color: var(--lav-400);
+  font-size: 11px;
+  opacity: 0;
+}
+.kitten-zzz span {
+  display: inline-block;
+  margin-left: 1px;
+}
+#kitten[data-state='sleep'] .kitten-zzz {
+  opacity: 1;
+  animation: zzz 2.4s ease-in-out infinite;
+}
+@keyframes zzz {
+  0% {
+    transform: translate(0, 4px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(10px, -14px);
+    opacity: 0;
+  }
+}
+
+/* ---------- flat SVG fallback ---------- */
+.kitten-svg-wrap {
+  width: 56px;
+  height: 43px;
+  position: relative;
+}
+.kitten-svg {
+  overflow: visible;
+  display: block;
+  filter: drop-shadow(0 3px 3px rgba(92, 72, 104, 0.12));
+}
+.kitten-svg .k-body,
+.kitten-svg .k-face,
+.kitten-svg .k-ear,
+.kitten-svg .k-leg {
+  fill: #f6dcc6;
+}
+.kitten-svg .k-belly {
+  fill: #fcefe3;
+}
+.kitten-svg .k-stripe {
+  fill: none;
+  stroke: #e7b891;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.kitten-svg .k-ear-in {
+  fill: #f3b8c5;
+}
+.kitten-svg .k-tail path {
+  fill: none;
+  stroke: #f0cdb0;
+  stroke-width: 6.5;
+  stroke-linecap: round;
+}
+.kitten-svg .k-eye {
+  fill: #4b3e52;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: blink 4.5s infinite;
+}
+.kitten-svg .k-glint {
+  fill: #fff;
+}
+.kitten-svg .k-happy-eyes {
+  fill: none;
+  stroke: #4b3e52;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  opacity: 0;
+}
+.kitten-svg .k-cheek {
+  fill: #f4a9ba;
+  opacity: 0.55;
+}
+.kitten-svg .k-nose {
+  fill: #e48aa0;
+}
+.kitten-svg .k-mouth {
+  fill: none;
+  stroke: #b7808e;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+}
+.kitten-svg .k-whisker {
+  fill: none;
+  stroke: #d7b9a8;
+  stroke-width: 0.9;
+  stroke-linecap: round;
+}
+
+.kitten-svg .k-tail {
+  transform-origin: 18px 40px;
+  animation: tail 2.4s ease-in-out infinite;
+}
+.kitten-svg .k-head {
+  transform-origin: 60px 38px;
+  transition: transform 0.3s;
+}
+.kitten-svg .k-leg {
+  transform-box: fill-box;
+  transform-origin: 50% 10%;
+}
+.kitten-svg .k-paw {
+  transform-origin: 55px 42px;
+}
+
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes tail {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+@keyframes legA {
+  0%,
+  100% {
+    transform: rotate(28deg);
+  }
+  50% {
+    transform: rotate(-28deg);
+  }
+}
+@keyframes legB {
+  0%,
+  100% {
+    transform: rotate(-28deg);
+  }
+  50% {
+    transform: rotate(28deg);
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+
+/* running */
+#kitten .kitten-svg-wrap[data-state='run'] .k-leg-a {
+  animation: legA var(--run-speed) linear infinite;
+}
+#kitten .kitten-svg-wrap[data-state='run'] .k-leg-b {
+  animation: legB var(--run-speed) linear infinite;
+}
+#kitten .kitten-svg-wrap[data-state='run'] .kitten-svg {
+  animation: bob var(--run-speed) linear infinite;
+}
+#kitten .kitten-svg-wrap[data-state='run'] .k-tail {
+  animation-duration: 0.8s;
+}
+
+/* happy / purring */
+#kitten .kitten-svg-wrap[data-state='happy'] .k-eyes {
+  opacity: 0;
+}
+#kitten .kitten-svg-wrap[data-state='happy'] .k-happy-eyes {
+  opacity: 1;
+}
+#kitten .kitten-svg-wrap[data-state='happy'] .k-head {
+  transform: rotate(-6deg);
+}
+#kitten .kitten-svg-wrap[data-state='happy'] .k-cheek {
+  opacity: 0.9;
+}
+#kitten .kitten-svg-wrap[data-state='happy'] .k-tail {
+  animation-duration: 0.9s;
+}
+
+/* sleeping: lie down, eyes closed */
+#kitten .kitten-svg-wrap[data-state='sleep'] .k-leg {
+  transform: scaleY(0.35);
+  transform-origin: 50% 0%;
+}
+#kitten .kitten-svg-wrap[data-state='sleep'] .kitten-svg {
+  transform: translateY(8px);
+  transition: transform 0.6s;
+}
+#kitten .kitten-svg-wrap[data-state='sleep'] .k-eyes {
+  opacity: 0;
+}
+#kitten .kitten-svg-wrap[data-state='sleep'] .k-happy-eyes {
+  opacity: 1;
+  transform: translateY(1px) scaleY(-1);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+#kitten .kitten-svg-wrap[data-state='sleep'] .k-head {
+  transform: translateY(5px) rotate(8deg);
+}
+#kitten .kitten-svg-wrap[data-state='sleep'] .k-tail {
+  animation-duration: 6s;
+}
+
+/* ---------- interface elements the kitten plays with ---------- */
+.kitten-bump {
+  animation: kittenBump 0.6s cubic-bezier(0.3, 0.6, 0.4, 1);
+}
+@keyframes kittenBump {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  25% {
+    translate: calc(var(--push-dir, 1) * 8px) -2px;
+    rotate: calc(var(--push-dir, 1) * 1.4deg);
+  }
+  55% {
+    translate: calc(var(--push-dir, 1) * -3px) 0;
+    rotate: calc(var(--push-dir, 1) * -0.6deg);
+  }
+  80% {
+    translate: calc(var(--push-dir, 1) * 1px) 0;
+    rotate: 0deg;
+  }
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+/* the kitten is standing on it: held down */
+.kitten-perch {
+  translate: 0 var(--press-depth, 3px);
+  box-shadow: var(--press-shadow) !important;
+  transition:
+    translate 0.12s,
+    box-shadow 0.12s;
+}
+/* landing / hopping on it */
+.kitten-press {
+  animation: kittenPress 0.42s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+@keyframes kittenPress {
+  0% {
+    translate: 0 0;
+  }
+  30% {
+    translate: 0 calc(var(--press-depth, 3px) + 3px);
+    scale: 1.02 0.94;
+  }
+  60% {
+    translate: 0 var(--press-depth, 3px);
+    scale: 1;
+  }
+  100% {
+    translate: 0 var(--press-depth, 3px);
+  }
+}
+.kitten-heart {
+  position: fixed;
+  z-index: 41;
+  pointer-events: none;
+  color: var(--pink-500);
+  font-size: 13px;
+  animation: heart 1.4s ease-out forwards;
+}
+@keyframes heart {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kitten-bump,
+  .kitten-press {
+    animation: none;
+  }
+}
+
+/* Auerilus the robot (AI tab) */
+#robot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 39;
+  pointer-events: none;
+  will-change: transform;
+}
+#robot canvas {
+  display: block;
+  position: relative;
+}
+#robot[data-state='sleep'] .kitten-zzz {
+  opacity: 1;
+  animation: zzz 2.4s ease-in-out infinite;
+}
+.robot-shadow {
+  width: 44px;
+}
+.robot-fallback {
+  font-size: 32px;
+  line-height: 1;
+  position: relative;
+}
+
+/* Pet corner at the bottom of the sidebar */
+.pet-corner {
+  position: relative;
+  height: 128px;
+  margin: 6px 0 4px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, transparent 40%, var(--lav-50) 100%);
+  flex-shrink: 0;
+}
+.pet-corner[hidden] {
+  display: none;
+}
+.pet-corner canvas {
+  display: block;
+}
+.pet-zzz {
+  position: absolute;
+  font-weight: 800;
+  font-size: 10px;
+  color: var(--lav-400);
+  pointer-events: none;
+  animation: zzz 2.6s ease-in-out infinite;
+}
+.pet-zzz span:nth-child(2) {
+  font-size: 12px;
+}
+.pet-zzz span:nth-child(3) {
+  font-size: 14px;
+}
+.pet-fallback {
+  font-size: 22px;
+  text-align: center;
+  padding-top: 40px;
+}

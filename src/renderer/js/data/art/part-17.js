@@ -160,21 +160,6 @@ export default [
     ),
   },
   {
-    id: 'kirchner-potsdamer-platz',
-    wiki: 'Potsdamer Platz (painting)',
-    q: 'Ernst Ludwig Kirchner Potsdamer Platz 1914 painting',
-    a: 'kirchner',
-    y: '1914',
-    t: x('Потсдамська площа', 'Potsdamer Platz'),
-    s: S.bridge,
-    m: M.oilCanvas,
-    l: x('Нова національна галерея, Берлін', 'Neue Nationalgalerie, Berlin'),
-    d: x(
-      'Посеред нічної площі на круглому острівці стоять дві жінки — одна у вуалі, як удова. Довкола них, ніби на сцені, перекошені будинки, зелене небо й крихітні постаті чоловіків, що поспішають до вокзалу.\nПотсдамська площа була одним із найжвавіших місць Берліна. Кірхнер написав картину напередодні Першої світової війни як підсумок своєї серії вуличних сцен: місто тут холодне, а люди безмежно самотні. У 1937 році нацисти таврували його мистецтво як «дегенеративне». Полотно зберігається в Новій національній галереї Берліна.',
-      'Auf einer runden Verkehrsinsel mitten auf dem nächtlichen Platz stehen zwei Frauen, eine verschleiert wie eine Witwe. Um sie herum wie auf einer Bühne schiefe Häuser, grüner Himmel und winzige Männer, die zum Bahnhof eilen.\nDer Potsdamer Platz war einer der belebtesten Orte Berlins. Kirchner malte das Bild kurz vor dem Ersten Weltkrieg als Summe seiner Straßenszenen: Die Stadt ist kalt, die Menschen grenzenlos einsam. 1937 brandmarkten die Nazis seine Kunst als „entartet“. Das Gemälde hängt in der Neuen Nationalgalerie in Berlin.',
-    ),
-  },
-  {
     id: 'mondrian-gray-tree',
     wiki: 'Gray Tree',
     a: 'mondrian',
@@ -372,21 +357,6 @@ export default [
     d: x(
       'Велосипедиста майже не видно: його тіло, колеса й дорога розкладені на клини, дуги та кольорові площини, що мчать зліва направо. Боччоні малює не людину, а саму швидкість.\nФутуристи хотіли показати, як рух змінює форму предметів, і запозичили з кубізму розбиття простору на грані. Велосипед і автомобіль були для них символами нової доби. Картина входить до зібрання Джанні Маттіолі, яке експонується в Колекції Пеґґі Ґуґґенгайм у Венеції.',
       'Vom Radfahrer ist kaum etwas zu sehen: Körper, Räder und Straße sind in Keile, Bögen und Farbflächen zerlegt, die von links nach rechts rasen. Boccioni malt nicht den Menschen, sondern die Geschwindigkeit selbst.\nDie Futuristen wollten zeigen, wie Bewegung die Form der Dinge verändert, und übernahmen vom Kubismus die Zerlegung des Raumes in Facetten. Fahrrad und Auto waren für sie Symbole der neuen Zeit. Das Bild gehört zur Sammlung Gianni Mattioli, die in der Peggy Guggenheim Collection in Venedig gezeigt wird.',
-    ),
-  },
-  {
-    id: 'modersohn-sixth-anniversary',
-    wiki: 'Self-Portrait on Her Sixth Wedding Anniversary',
-    q: 'Paula Modersohn-Becker Self-portrait sixth wedding anniversary',
-    a: 'modersohn',
-    y: '1906',
-    t: x('Автопортрет у шосту річницю весілля', 'Selbstbildnis am 6. Hochzeitstag'),
-    s: S.expressionism,
-    m: M.oilCardboard,
-    l: x('Музей Паули Модерзон-Беккер, Бремен', 'Paula Modersohn-Becker Museum, Bremen'),
-    d: x(
-      'Художниця стоїть оголена до пояса, з бурштиновим намистом, і ніжно тримає руки на животі, ніби вагітна. Погляд спокійний і трохи допитливий, форми прості й важкі, кольори теплі.\nЦе вважають першим відомим оголеним автопортретом жінки-художниці. Паула Модерзон-Беккер написала його в Парижі, куди втекла від чоловіка, художника Отто Модерзона, і від тихої колонії митців у Ворпсведе під Бременом. Насправді тоді вона не була вагітна. Через рік вона померла після пологів доньки у 31 рік. Картина зберігається в її музеї в Бремені.',
-      'Die Malerin steht mit nacktem Oberkörper und Bernsteinkette da und legt die Hände zärtlich auf den Bauch, als wäre sie schwanger. Der Blick ist ruhig und ein wenig fragend, die Formen schlicht und schwer, die Farben warm.\nEs gilt als erstes bekanntes Akt-Selbstbildnis einer Malerin. Paula Modersohn-Becker malte es in Paris, wohin sie vor ihrem Mann, dem Maler Otto Modersohn, und der stillen Künstlerkolonie Worpswede bei Bremen geflohen war. Schwanger war sie damals nicht. Ein Jahr später starb sie mit 31 Jahren nach der Geburt ihrer Tochter. Das Bild hängt in ihrem Museum in Bremen.',
     ),
   },
   {

@@ -79,7 +79,7 @@ const director = {
         kitten.goTo(bot.x - Math.sign(bot.x - k.x || 1) * 26, bot.y, 0.9);
         if (d < 34 && !kitten.busy) {
           kitten.jumpTo({ x: bot.x, y: bot.y + 2 }, 34, () => {
-            view.spin();
+            view?.spin();
             happyUntil = performance.now() + 900;
           });
           game = { phase: 'tagged', until: now + 1200 };
@@ -154,11 +154,15 @@ function fallbackRobot() {
   };
 }
 
+let cachedView = null;
+
 export function mountPlayground(cardEl) {
   const first = !area;
   area = cardEl;
   if (!first) return;
-  view = createRobot3D() || fallbackRobot();
+  // One WebGL context for the robot for the whole session; re-mounting just re-attaches it.
+  cachedView ||= createRobot3D() || fallbackRobot();
+  view = cachedView;
   robotEl = document.createElement('div');
   robotEl.id = 'robot';
   robotEl.style.width = `${view.size.w}px`;
@@ -192,7 +196,6 @@ export function stopPlayground() {
   setKittenDirector(null);
   window.removeEventListener('mousemove', onMove);
   robotEl?.remove();
-  view?.dispose();
   robotEl = null;
   view = null;
 }

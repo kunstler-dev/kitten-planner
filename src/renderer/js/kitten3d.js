@@ -14,12 +14,12 @@ const COAT = [
 ];
 const COLORS = { white: 0xfff3e6, pink: 0xf0a3b4, iris: 0x9fcf5a, pupil: 0x16110f, shine: 0xffffff };
 
-function buildCat() {
+export function buildCat({ coat = COAT, iris = COLORS.iris, seed = 3.7 } = {}) {
   const fur = toonMaterial(0xffffff);
   const M = {
     white: toonMaterial(COLORS.white),
     pink: toonMaterial(COLORS.pink),
-    iris: new THREE.MeshBasicMaterial({ color: COLORS.iris }),
+    iris: new THREE.MeshBasicMaterial({ color: iris }),
     pupil: new THREE.MeshBasicMaterial({ color: COLORS.pupil }),
     shine: new THREE.MeshBasicMaterial({ color: COLORS.shine }),
   };
@@ -150,7 +150,7 @@ function buildCat() {
   // Default pose, then bake the patch pattern in character space.
   tail[0].rotation.z = 0.75;
   root.updateMatrixWorld(true);
-  for (const mesh of furry) paintPatches(mesh, COAT, { freq: 2.1, seed: 3.7 });
+  for (const mesh of furry) paintPatches(mesh, coat, { freq: 2.1, seed });
 
   return { root, torso, head, eyes, legs, tail };
 }

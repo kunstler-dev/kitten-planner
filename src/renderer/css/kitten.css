@@ -348,3 +348,38 @@
   line-height: 1;
   position: relative;
 }
+
+/* Pet corner at the bottom of the sidebar */
+.pet-corner {
+  position: relative;
+  height: 128px;
+  margin: 6px 0 4px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, transparent 40%, var(--lav-50) 100%);
+  flex-shrink: 0;
+}
+.pet-corner[hidden] {
+  display: none;
+}
+.pet-corner canvas {
+  display: block;
+}
+.pet-zzz {
+  position: absolute;
+  font-weight: 800;
+  font-size: 10px;
+  color: var(--lav-400);
+  pointer-events: none;
+  animation: zzz 2.6s ease-in-out infinite;
+}
+.pet-zzz span:nth-child(2) {
+  font-size: 12px;
+}
+.pet-zzz span:nth-child(3) {
+  font-size: 14px;
+}
+.pet-fallback {
+  font-size: 22px;
+  text-align: center;
+  padding-top: 40px;
+}

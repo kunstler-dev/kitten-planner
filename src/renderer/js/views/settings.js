@@ -3,6 +3,7 @@ import { state, update, replaceData, flushSave } from '../state.js';
 import { t } from '../i18n.js';
 import { MODELS, resetKeyStatus, chatErrorText } from './chat.js';
 import { setKittenEnabled, setKittenSpeed } from '../kitten.js';
+import { setPetsEnabled } from '../pets.js';
 import { applyLang, applyTheme } from '../app-shell.js';
 
 const BUSINESS_FIELDS = [
@@ -104,6 +105,14 @@ export async function renderSettings(root) {
             setKittenEnabled(e.target.checked);
           },
           t('set.kittenShow'),
+        ),
+        toggle(
+          d.settings.pets,
+          (e) => {
+            update((x) => (x.settings.pets = e.target.checked), { silent: true });
+            setPetsEnabled(e.target.checked);
+          },
+          t('set.petsShow'),
         ),
         field(
           t('set.kittenSpeed'),

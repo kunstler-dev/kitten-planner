@@ -179,7 +179,10 @@ export default [
     t: x('Пожежа в будівлі парламенту', 'Der Brand der Parlamentsgebäude'),
     s: S.romanticism,
     m: M.oilCanvas,
-    l: x('Художній музей Філадельфії та Художній музей Клівленда (дві версії)', 'Philadelphia Museum of Art und Cleveland Museum of Art (zwei Fassungen)'),
+    l: x(
+      'Художній музей Філадельфії та Художній музей Клівленда (дві версії)',
+      'Philadelphia Museum of Art und Cleveland Museum of Art (zwei Fassungen)',
+    ),
     d: x(
       'Уночі 16 жовтня 1834 року згорів Вестмінстерський палац, і Тернер разом із тисячами лондонців спостерігав пожежу з човна на Темзі. Полум’я й дим відбиваються у воді, а натовп на мосту — лише темна маса.\nВін зробив десятки ескізів і дві великі картини. Одну з них, за легендою, він дописував просто в залі виставки на «вернісажі», на очах в інших художників, які дивилися на нього як на чарівника.',
       'In der Nacht zum 16. Oktober 1834 brannte der Westminsterpalast, und Turner sah das Feuer mit Tausenden Londonern von einem Boot auf der Themse. Flammen und Rauch spiegeln sich im Wasser, die Menge auf der Brücke ist nur eine dunkle Masse.\nEr machte Dutzende Skizzen und zwei große Bilder. Eines soll er an einem „Firnistag“ direkt in der Ausstellung vor den Augen anderer Maler fertiggestellt haben, die ihm wie einem Zauberer zusahen.',
@@ -389,7 +392,10 @@ export default [
     t: x('Проголошення Німецької імперії', 'Die Proklamierung des Deutschen Kaiserreiches'),
     s: S.history,
     m: M.oilCanvas,
-    l: x('Фонд Отто фон Бісмарка, Фрідріхсруе (третя версія)', 'Otto-von-Bismarck-Stiftung, Friedrichsruh (dritte Fassung)'),
+    l: x(
+      'Фонд Отто фон Бісмарка, Фрідріхсруе (третя версія)',
+      'Otto-von-Bismarck-Stiftung, Friedrichsruh (dritte Fassung)',
+    ),
     d: x(
       '18 січня 1871 року в Дзеркальній залі Версалю, у переможеній Франції, німецькі князі й офіцери проголошують прусського короля Вільгельма I імператором. У центрі в білому мундирі — канцлер Бісмарк.\nАнтон фон Вернер був присутній особисто як молодий художник і написав три версії. На цій, подарованій Бісмарку на 70-річчя, він «покращив» історію: Бісмарк отримав білий мундир і орден, якого тоді не мав. Перші дві версії загинули під час Другої світової війни.',
       'Am 18. Januar 1871 rufen im Spiegelsaal von Versailles, im besiegten Frankreich, die deutschen Fürsten und Offiziere den preußischen König Wilhelm I. zum Kaiser aus. In der Mitte im weißen Waffenrock Kanzler Bismarck.\nAnton von Werner war als junger Maler dabei und malte drei Fassungen. In dieser, die Bismarck zum 70. Geburtstag geschenkt bekam, „verbesserte“ er die Geschichte: Bismarck trägt einen weißen Rock und einen Orden, den er damals nicht besaß. Die ersten beiden Fassungen gingen im Zweiten Weltkrieg verloren.',

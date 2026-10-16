@@ -3,6 +3,7 @@ import { h, icon } from './ui.js';
 import { state, update } from './state.js';
 import { t, setLang, getLang, LANG_LABELS } from './i18n.js';
 import { navigate, route, getView } from './router.js';
+import { petCorner } from './pets.js';
 
 export const NAV_GROUPS = [
   { items: [{ id: 'home', icon: 'home' }] },
@@ -50,6 +51,7 @@ export function renderNav() {
       ),
     ),
     h('div', { class: 'nav-spacer' }),
+    petCorner(),
     item({ id: 'settings', icon: 'settings' }),
   );
 }

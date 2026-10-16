@@ -179,7 +179,10 @@ export default [
     t: x('Мадонна в скелях', 'Die Felsgrottenmadonna'),
     s: S.highRen,
     m: M.oilPanel,
-    l: x('Лувр, Париж (друга версія — Національна галерея, Лондон)', 'Louvre, Paris (zweite Fassung: National Gallery, London)'),
+    l: x(
+      'Лувр, Париж (друга версія — Національна галерея, Лондон)',
+      'Louvre, Paris (zweite Fassung: National Gallery, London)',
+    ),
     d: x(
       'Богородиця в темній скелястій печері обіймає маленького Івана Хрестителя, а немовля Ісус благословляє його. Ангел вказує пальцем і дивиться на нас. Дивовижне світло, ботанічно точні рослини й геологічно правдиві скелі видають Леонардо-науковця.\nІснують дві майже однакові версії: перша в Луврі, друга в Лондоні. Через суперечку про оплату з міланським братством Леонардо, ймовірно, продав першу комусь іншому і пізніше написав другу. Порівнюйте: в лондонській є німби й хрест Івана.',
       'Maria umarmt in einer dunklen Felsengrotte den kleinen Johannes den Täufer, das Jesuskind segnet ihn. Ein Engel zeigt mit dem Finger und blickt uns an. Das wundersame Licht, botanisch genaue Pflanzen und geologisch stimmige Felsen verraten den Naturforscher Leonardo.\nEs gibt zwei fast gleiche Fassungen: die erste im Louvre, die zweite in London. Wegen eines Streits mit der Mailänder Bruderschaft ums Honorar verkaufte Leonardo die erste wohl anderweitig und malte später die zweite. Vergleichen Sie: Die Londoner hat Heiligenscheine und Johannes’ Kreuzstab.',

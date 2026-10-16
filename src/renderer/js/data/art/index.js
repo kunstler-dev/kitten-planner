@@ -26,7 +26,26 @@ export { ARTISTS, PINS };
 export const START = '2026-10-16';
 export const END = '2027-12-31';
 
-export const PAINTINGS = [p01, p02, p03, p04, p05, p06, p07, p08, p09, p10, p11, p12, p13, p14, p15, p16, p17, p18].flat();
+export const PAINTINGS = [
+  p01,
+  p02,
+  p03,
+  p04,
+  p05,
+  p06,
+  p07,
+  p08,
+  p09,
+  p10,
+  p11,
+  p12,
+  p13,
+  p14,
+  p15,
+  p16,
+  p17,
+  p18,
+].flat();
 export const BY_ID = Object.fromEntries(PAINTINGS.map((p) => [p.id, p]));
 
 const DAY = 86400000;

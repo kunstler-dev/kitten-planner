@@ -81,7 +81,10 @@ export default [
     t: x('Діана й Актеон', 'Diana und Aktaion'),
     s: S.venetian,
     m: M.oilCanvas,
-    l: x('Національна галерея, Лондон, і Національні галереї Шотландії (спільно)', 'National Gallery, London, und National Galleries of Scotland (gemeinsam)'),
+    l: x(
+      'Національна галерея, Лондон, і Національні галереї Шотландії (спільно)',
+      'National Gallery, London, und National Galleries of Scotland (gemeinsam)',
+    ),
     d: x(
       'Мисливець Актеон випадково відсуває завісу й бачить богиню полювання Діану, що купається з німфами. Діана гнівно дивиться на нього — в наступному епізоді вона перетворить юнака на оленя, і його розірвуть власні собаки. На колоні вже лежить оленячий череп.\nЦе одна з «поезій» — серії міфологічних картин для короля Іспанії Філіпа II. У 2009 році її купили спільно Лондон і Единбург за 50 мільйонів фунтів, і тепер вона «переїжджає» між двома столицями.',
       'Der Jäger Aktaion schiebt zufällig einen Vorhang beiseite und sieht die Jagdgöttin Diana mit ihren Nymphen baden. Diana blickt ihn zornig an – gleich wird sie ihn in einen Hirsch verwandeln, und seine eigenen Hunde reißen ihn. Auf einer Säule liegt schon ein Hirschschädel.\nEs gehört zu den „Poesie“, einer Serie mythologischer Bilder für Philipp II. von Spanien. 2009 kauften London und Edinburgh es gemeinsam für 50 Millionen Pfund – seitdem „pendelt“ es zwischen beiden Hauptstädten.',
@@ -263,7 +266,10 @@ export default [
     t: x('Юдиф і Олоферн', 'Judith und Holofernes'),
     s: S.caravaggism,
     m: M.oilCanvas,
-    l: x('Національна галерея старовинного мистецтва (Палаццо Барберіні), Рим', 'Galleria Nazionale d’Arte Antica (Palazzo Barberini), Rom'),
+    l: x(
+      'Національна галерея старовинного мистецтва (Палаццо Барберіні), Рим',
+      'Galleria Nazionale d’Arte Antica (Palazzo Barberini), Rom',
+    ),
     d: x(
       'Біблійна героїня Юдиф рятує своє місто, обезголовлюючи ассирійського полководця Олоферна. Караваджо показує мить удару без жодної поблажки: кров, крик, а на обличчі юної Юдифі — водночас рішучість і відраза. Поруч стара служниця вже тримає мішок.\nМоделлю для Юдифі, ймовірно, була римська куртизанка Філліде Меландроні. Жорсткий театральний контраст світла й тіні (к’яроскуро) Караваджо зробив його одним із найвпливовіших художників століття.',
       'Die biblische Heldin Judith rettet ihre Stadt, indem sie den assyrischen Feldherrn Holofernes enthauptet. Caravaggio zeigt den Moment des Schnitts ohne jede Schonung: Blut, Schrei, und im Gesicht der jungen Judith zugleich Entschlossenheit und Ekel. Daneben hält die alte Magd schon den Sack bereit.\nModell für Judith war wohl die römische Kurtisane Fillide Melandroni. Das harte, theatralische Hell-Dunkel (Chiaroscuro) machte Caravaggio zu einem der einflussreichsten Maler des Jahrhunderts.',
@@ -347,7 +353,10 @@ export default [
     t: x('Хлопчик, укушений ящіркою', 'Knabe, von einer Eidechse gebissen'),
     s: S.caravaggism,
     m: M.oilCanvas,
-    l: x('Фонд Роберто Лонгі, Флоренція, і Національна галерея, Лондон (дві версії)', 'Fondazione Roberto Longhi, Florenz, und National Gallery, London (zwei Fassungen)'),
+    l: x(
+      'Фонд Роберто Лонгі, Флоренція, і Національна галерея, Лондон (дві версії)',
+      'Fondazione Roberto Longhi, Florenz, und National Gallery, London (zwei Fassungen)',
+    ),
     d: x(
       'Хлопець з трояндою за вухом простягнув руку до вишень — а з-за них вистрибнула ящірка й вкусила за палець. Він відсмикує руку, зморщившись від болю й переляку: мить, спіймана, як на фото.\nЦікава дрібниця — скляна ваза з водою, в якій відбивається вікно кімнати. Картину можна прочитати як алегорію: кохання (троянда) приносить і насолоду, і біль. Караваджо написав щонайменше дві версії.',
       'Ein Junge mit einer Rose hinterm Ohr greift nach Kirschen – da springt eine Eidechse hervor und beißt ihn in den Finger. Er zuckt zurück, das Gesicht vor Schmerz und Schreck verzogen: ein Moment wie fotografiert.\nEin schönes Detail ist die Glasvase mit Wasser, in der sich das Zimmerfenster spiegelt. Man kann das Bild als Allegorie lesen: Die Liebe (die Rose) bringt Lust und Schmerz. Caravaggio malte mindestens zwei Fassungen.',

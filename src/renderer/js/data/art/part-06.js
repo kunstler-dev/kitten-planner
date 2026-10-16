@@ -151,7 +151,10 @@ export default [
     t: x('Концерт', 'Das Konzert'),
     s: S.dutchGolden,
     m: M.oilCanvas,
-    l: x('Викрадена в 1990 році з Музею Ізабелли Стюарт Гарднер, Бостон', '1990 aus dem Isabella Stewart Gardner Museum, Boston, gestohlen'),
+    l: x(
+      'Викрадена в 1990 році з Музею Ізабелли Стюарт Гарднер, Бостон',
+      '1990 aus dem Isabella Stewart Gardner Museum, Boston, gestohlen',
+    ),
     d: x(
       'Домашній концерт: дівчина грає на клавесині, юнак з лютнею сидить спиною, а друга жінка співає, тримаючи ноти. На стіні — пейзаж і картина «Звідниця» Дірка ван Бабюрена, тож сцена має двозначний підтекст.\nЦе найдорожча зі всіх викрадених картин: її вартість оцінюють у сотні мільйонів доларів. Вона зникла тієї ж ночі 1990 року, що й «Шторм на Галилейському морі» Рембрандта, і досі не знайдена. Відомо лише 34–37 картин Вермеєра, тож втрата величезна.',
       'Ein Hauskonzert: Ein Mädchen spielt Cembalo, ein junger Mann mit Laute sitzt mit dem Rücken zu uns, eine zweite Frau singt mit Notenblatt. An der Wand eine Landschaft und Dirck van Baburens „Kupplerin“ – die Szene hat also einen doppeldeutigen Unterton.\nEs ist das wertvollste gestohlene Gemälde überhaupt, geschätzt auf Hunderte Millionen Dollar. Es verschwand in derselben Nacht 1990 wie Rembrandts „Sturm“ und ist bis heute nicht aufgetaucht. Von Vermeer kennt man nur 34–37 Bilder – der Verlust ist enorm.',
@@ -277,7 +280,10 @@ export default [
     t: x('Єврейське кладовище', 'Der Judenfriedhof'),
     s: S.dutchGolden,
     m: M.oilCanvas,
-    l: x('Інститут мистецтв Детройта (друга версія — Галерея старих майстрів, Дрезден)', 'Detroit Institute of Arts (zweite Fassung: Gemäldegalerie Alte Meister, Dresden)'),
+    l: x(
+      'Інститут мистецтв Детройта (друга версія — Галерея старих майстрів, Дрезден)',
+      'Detroit Institute of Arts (zweite Fassung: Gemäldegalerie Alte Meister, Dresden)',
+    ),
     d: x(
       'Білі надгробки, зруйнована церква, мертве дерево, бурхливий струмок і грозове небо, крізь яке пробивається веселка — символ надії. Це не точний пейзаж, а поетична медитація про минущість життя.\nНадгробки Рейсдал намалював з натури на справжньому португальсько-єврейському кладовищі Бет Хаїм в Аудеркерку біля Амстердама — вони стоять там і сьогодні. Ґете присвятив картині захоплений есей, назвавши Рейсдала «поетом» серед художників.',
       'Weiße Grabsteine, eine Kirchenruine, ein abgestorbener Baum, ein tosender Bach und ein Gewitterhimmel, durch den ein Regenbogen bricht – Zeichen der Hoffnung. Keine genaue Landschaft, sondern eine poetische Meditation über die Vergänglichkeit.\nDie Grabsteine zeichnete Ruisdael nach dem Leben auf dem portugiesisch-jüdischen Friedhof Beth Haim in Ouderkerk bei Amsterdam – sie stehen dort noch heute. Goethe widmete dem Bild einen begeisterten Aufsatz und nannte Ruisdael einen „Dichter“ unter den Malern.',

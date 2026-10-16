@@ -15,6 +15,7 @@ export const PINS = {
   '2027-03-30': 'sunflowers', // van Gogh's birthday
   '2027-04-15': 'mona-lisa', // Leonardo's birthday
   '2027-07-15': 'night-watch', // Rembrandt's birthday
+  '2027-08-24': 'shevchenko-picturesque-ukraine', // Ukrainian Independence Day
   '2027-08-26': 'royal-family-1846', // Prince Albert of Saxe-Coburg's birthday
   '2027-10-03': 'wanderer-fog', // German Unity Day
   '2027-10-31': 'saturn', // Halloween

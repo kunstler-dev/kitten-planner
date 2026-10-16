@@ -39,7 +39,10 @@ export default [
     t: x('Наполеон на перевалі Сен-Бернар', 'Napoleon überquert die Alpen'),
     s: S.neoclassicism,
     m: M.oilCanvas,
-    l: x('Палац Шарлоттенбург, Берлін; Мальмезон та інші (п’ять версій)', 'Schloss Charlottenburg, Berlin; Malmaison u. a. (fünf Fassungen)'),
+    l: x(
+      'Палац Шарлоттенбург, Берлін; Мальмезон та інші (п’ять версій)',
+      'Schloss Charlottenburg, Berlin; Malmaison u. a. (fünf Fassungen)',
+    ),
     d: x(
       'Перший консул на баскому білому коні, що став дибки, вказує вгору до вершини Альп, плащ майорить на вітрі, а на камені вирізано імена Ганнібала, Карла Великого й Бонапарта. Це чиста пропаганда.\nНасправді Наполеон перейшов перевал у 1800 році в гарну погоду на мулі. Він сам попросив зобразити його «спокійним на шаленому коні». Давид зробив п’ять версій, і одна з них, яку пруссаки захопили як трофей у 1814 році, висить у Берліні.',
       'Der Erste Konsul auf einem steigenden feurigen Schimmel zeigt zum Alpengipfel, der Mantel flattert im Sturm, in den Felsen sind die Namen Hannibal, Karl der Große und Bonaparte gemeißelt. Reine Propaganda.\nIn Wahrheit überquerte Napoleon den Pass im Jahr 1800 bei gutem Wetter auf einem Maultier. Er selbst wünschte sich, „ruhig auf einem feurigen Pferd“ dargestellt zu werden. David malte fünf Fassungen; eine erbeuteten die Preußen 1814 – sie hängt in Berlin.',

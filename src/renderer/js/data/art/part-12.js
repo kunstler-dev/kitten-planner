@@ -39,7 +39,10 @@ export default [
     t: x('Каменярі', 'Die Steinklopfer'),
     s: S.realism,
     m: M.oilCanvas,
-    l: x('Знищена в 1945 році (колишня Галерея нових майстрів, Дрезден)', '1945 zerstört (ehemals Galerie Neue Meister, Dresden)'),
+    l: x(
+      'Знищена в 1945 році (колишня Галерея нових майстрів, Дрезден)',
+      '1945 zerstört (ehemals Galerie Neue Meister, Dresden)',
+    ),
     d: x(
       'Старий і хлопець б’ють каміння біля дороги — найважча й найбідніша праця. Їхніх облич майже не видно: обидва відвернулися, обдерті, зайняті роботою. Курбе побачив їх біля Орнана й запросив позувати.\nКартину, яку соціалісти вважали символом експлуатації праці, у лютому 1945 року знищили під час бомбардування Дрездена разом із сотнями інших робіт, коли її перевозили до сховища. Сьогодні ми знаємо її лише за фотографіями.',
       'Ein Alter und ein Junge zerschlagen am Straßenrand Steine – die schwerste und ärmste Arbeit. Ihre Gesichter sind kaum zu sehen: Beide sind abgewandt, zerlumpt, in die Arbeit vertieft. Courbet sah sie bei Ornans und bat sie, Modell zu stehen.\nDas Bild, das Sozialisten als Symbol ausgebeuteter Arbeit galt, wurde im Februar 1945 bei der Bombardierung Dresdens zusammen mit Hunderten anderen Werken auf dem Transport ins Depot zerstört. Heute kennen wir es nur von Fotos.',

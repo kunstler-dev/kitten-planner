@@ -17,7 +17,16 @@ export const LEATHER_COLORS = {
   taupe: '#8a7a6d',
 };
 
-const TYPES = ['notebook', 'book', 'album', 'guestbook'];
+const TYPES = ['notebook', 'pocket', 'notepad', 'album', 'book', 'guestbook'];
+// Sensible starting point when a product type is picked; everything stays editable.
+const TYPE_PRESETS = {
+  notebook: { format: 'a5', cover: 'hard', binding: 'sewn', leaves: 96 },
+  pocket: { format: 'a6', cover: 'soft', binding: 'japanese', leaves: 48, ruling: 'dotted' },
+  notepad: { format: 'a5', cover: 'soft', binding: 'rings', leaves: 60, ruling: 'lined' },
+  album: { format: 'sq', cover: 'hard', binding: 'coptic', leaves: 30, paper: 'kraft', ruling: 'blank' },
+  book: { format: 'a5', cover: 'hard', binding: 'sewn', leaves: 160, ruling: 'blank' },
+  guestbook: { format: 'sq', cover: 'hard', binding: 'sewn', leaves: 60, ruling: 'blank' },
+};
 const RULINGS = ['blank', 'dotted', 'lined', 'grid'];
 
 let tab = 'config';
@@ -91,9 +100,10 @@ function configurator(root) {
       segmented(
         TYPES.map((v) => ({ value: v, label: t(`ws.type.${v}`) })),
         config.type,
-        (v) => set({ type: v }),
+        (v) => set({ type: v, ...TYPE_PRESETS[v] }),
       ),
     ),
+    h('div', { class: 'muted small cfg-hint' }, t('ws.vatHint')),
     h(
       'div',
       { class: 'field-row' },

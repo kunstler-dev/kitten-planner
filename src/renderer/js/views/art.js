@@ -44,7 +44,12 @@ function artistLine(p) {
 
 export function artThumb(dateKey, onOpen) {
   if (!canOpen(dateKey)) {
-    return h('div', { class: 'art-teaser locked' }, icon('lock', 16), h('span', {}, t('art.locked', { date: longDate(dateKey) })));
+    return h(
+      'div',
+      { class: 'art-teaser locked' },
+      icon('lock', 16),
+      h('span', {}, t('art.locked', { date: longDate(dateKey) })),
+    );
   }
   const p = paintingFor(dateKey);
   const img = h('img', { alt: '' });
@@ -52,7 +57,13 @@ export function artThumb(dateKey, onOpen) {
     'button',
     { class: `art-teaser${isOpened(dateKey) ? ' seen' : ''}`, onclick: onOpen },
     h('div', { class: 'art-teaser-img' }, img),
-    h('div', { class: 'art-teaser-text' }, h('div', { class: 'art-kicker' }, icon('sparkle', 12), t('art.ofTheDay')), isOpened(dateKey) ? h('b', {}, tx(p.t)) : h('b', {}, t('art.surprise')), h('span', { class: 'muted small' }, isOpened(dateKey) ? artistLine(p) : t('art.clickToOpen'))),
+    h(
+      'div',
+      { class: 'art-teaser-text' },
+      h('div', { class: 'art-kicker' }, icon('sparkle', 12), t('art.ofTheDay')),
+      isOpened(dateKey) ? h('b', {}, tx(p.t)) : h('b', {}, t('art.surprise')),
+      h('span', { class: 'muted small' }, isOpened(dateKey) ? artistLine(p) : t('art.clickToOpen')),
+    ),
   );
   if (isOpened(dateKey)) loadArtImage(img, p, () => img.remove());
   else img.replaceWith(h('div', { class: 'art-egg' }, '🎨'));
@@ -73,7 +84,9 @@ export function openArt(dateKey) {
         const img = h('img', { alt: tx(p.t) });
         const frame = h('div', { class: 'art-frame loading' }, img);
         img.onload = () => frame.classList.remove('loading');
-        loadArtImage(img, p, () => frame.replaceChildren(h('div', { class: 'art-noimg' }, icon('sparkle', 28), h('span', {}, t('art.noImage')))));
+        loadArtImage(img, p, () =>
+          frame.replaceChildren(h('div', { class: 'art-noimg' }, icon('sparkle', 28), h('span', {}, t('art.noImage')))),
+        );
         const prev = addDays(current, -1);
         const next = addDays(current, 1);
         wrap.replaceChildren(
@@ -99,9 +112,19 @@ export function openArt(dateKey) {
             h(
               'div',
               { class: 'art-nav' },
-              h('button', { class: 'btn btn-ghost small', disabled: !canOpen(prev), onclick: () => ((current = prev), render()) }, icon('chevronLeft', 14), t('art.prev')),
+              h(
+                'button',
+                { class: 'btn btn-ghost small', disabled: !canOpen(prev), onclick: () => ((current = prev), render()) },
+                icon('chevronLeft', 14),
+                t('art.prev'),
+              ),
               h('span', { class: 'muted small' }, t('art.counter', { n: openedCount(), total: totalDays() })),
-              h('button', { class: 'btn btn-ghost small', disabled: !canOpen(next), onclick: () => ((current = next), render()) }, t('art.next'), icon('chevronRight', 14)),
+              h(
+                'button',
+                { class: 'btn btn-ghost small', disabled: !canOpen(next), onclick: () => ((current = next), render()) },
+                t('art.next'),
+                icon('chevronRight', 14),
+              ),
             ),
           ),
         );

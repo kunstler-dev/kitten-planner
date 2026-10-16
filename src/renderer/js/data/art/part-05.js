@@ -40,7 +40,10 @@ export default [
     t: x('Нарцис', 'Narziss'),
     s: S.caravaggism,
     m: M.oilCanvas,
-    l: x('Національна галерея старовинного мистецтва (Палаццо Барберіні), Рим', 'Galleria Nazionale d’Arte Antica (Palazzo Barberini), Rom'),
+    l: x(
+      'Національна галерея старовинного мистецтва (Палаццо Барберіні), Рим',
+      'Galleria Nazionale d’Arte Antica (Palazzo Barberini), Rom',
+    ),
     d: x(
       'Юнак схилився над темною водою і закохався у власне відображення — за міфом, він так і помре біля струмка й перетвориться на квітку нарцис. Його руки й відображення утворюють замкнуте коло, як карта гральної масті.\nУвесь простір занурений у темряву, світиться лише коліно юнака — центр композиції. Авторство Караваджо довго оскаржували, але нині більшість дослідників визнають картину його роботою.',
       'Ein junger Mann beugt sich über dunkles Wasser und verliebt sich in sein Spiegelbild – dem Mythos nach stirbt er am Bach und wird zur Narzisse. Seine Arme und ihr Spiegelbild schließen sich zu einem Kreis wie eine Spielkartenfigur.\nAlles liegt im Dunkeln, nur das Knie des Jünglings leuchtet – Mittelpunkt der Komposition. Caravaggios Urheberschaft war lange umstritten, heute erkennen die meisten Forscher das Bild als sein Werk an.',
@@ -96,7 +99,10 @@ export default [
     t: x('Аталанта й Гіппомен', 'Atalante und Hippomenes'),
     s: S.baroque,
     m: M.oilCanvas,
-    l: x('Музей Прадо, Мадрид (друга версія — Каподімонте, Неаполь)', 'Museo del Prado, Madrid (zweite Fassung: Capodimonte, Neapel)'),
+    l: x(
+      'Музей Прадо, Мадрид (друга версія — Каподімонте, Неаполь)',
+      'Museo del Prado, Madrid (zweite Fassung: Capodimonte, Neapel)',
+    ),
     d: x(
       'Бігунка Аталанта вийде заміж лише за того, хто переможе її в перегонах. Гіппомен хитрує: кидає золоті яблука, подаровані Венерою, і дівчина нахиляється за ними. Два тіла на темному тлі утворюють ідеальну танцювальну діагональ.\nГвідо Рені був «зіркою» Болоньї, а його елегантні фігури, гладкі, як мармур, тривалий час вважали вершиною краси. Майже порожнє тло й холодне світло роблять сцену схожою на сучасний фотосет.',
       'Die Läuferin Atalante heiratet nur den, der sie im Wettlauf besiegt. Hippomenes greift zu einer List: Er wirft goldene Äpfel, ein Geschenk der Venus, und sie bückt sich danach. Die beiden Körper bilden vor dunklem Grund eine vollkommene Tanzdiagonale.\nGuido Reni war der „Star“ von Bologna, seine eleganten, marmorglatten Figuren galten lange als Gipfel der Schönheit. Der fast leere Hintergrund und das kühle Licht wirken wie ein modernes Fotoshooting.',
@@ -320,7 +326,10 @@ export default [
     t: x('Шторм на Галилейському морі', 'Christus im Sturm auf dem See Genezareth'),
     s: S.dutchGolden,
     m: M.oilCanvas,
-    l: x('Викрадена в 1990 році з Музею Ізабелли Стюарт Гарднер, Бостон', '1990 aus dem Isabella Stewart Gardner Museum, Boston, gestohlen'),
+    l: x(
+      'Викрадена в 1990 році з Музею Ізабелли Стюарт Гарднер, Бостон',
+      '1990 aus dem Isabella Stewart Gardner Museum, Boston, gestohlen',
+    ),
     d: x(
       'Єдиний морський пейзаж Рембрандта: величезна хвиля підкидає човен, вітрило рветься, учні в паніці, а Христос спокійно прокидається. Один із моряків дивиться прямо на нас — це сам Рембрандт.\nУ ніч 18 березня 1990 року двоє злодіїв, переодягнених поліцейськими, вкрали з бостонського музею 13 творів, серед них цей. Справа досі не розкрита — винагорода становить 10 мільйонів доларів, а в музеї на стіні висять порожні рами, які чекають на повернення.',
       'Rembrandts einziges Seestück: Eine riesige Welle hebt das Boot, das Segel reißt, die Jünger geraten in Panik, und Christus erwacht ganz ruhig. Einer der Seeleute blickt uns direkt an – Rembrandt selbst.\nIn der Nacht zum 18. März 1990 stahlen zwei als Polizisten verkleidete Diebe 13 Werke aus dem Bostoner Museum, darunter dieses. Der Fall ist bis heute ungeklärt – die Belohnung beträgt 10 Millionen Dollar, und im Museum hängen leere Rahmen, die auf die Rückkehr warten.',

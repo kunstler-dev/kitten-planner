@@ -38,6 +38,7 @@ function defaultData() {
       model: 'gpt-4o-mini',
       kitten: true,
       kittenSpeed: 1,
+      pets: true,
       chatUsesContext: true,
       lang: 'uk',
       theme: 'light',

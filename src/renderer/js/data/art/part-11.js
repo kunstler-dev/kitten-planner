@@ -153,7 +153,10 @@ export default [
     t: x('Світло світу', 'Das Licht der Welt'),
     s: S.preraphaelite,
     m: M.oilCanvas,
-    l: x('Коледж Кібл, Оксфорд (пізніша версія — собор Святого Павла, Лондон)', 'Keble College, Oxford (spätere Fassung: St Paul’s Cathedral, London)'),
+    l: x(
+      'Коледж Кібл, Оксфорд (пізніша версія — собор Святого Павла, Лондон)',
+      'Keble College, Oxford (spätere Fassung: St Paul’s Cathedral, London)',
+    ),
     d: x(
       'Христос уночі з ліхтарем стукає в двері, зарослі бур’яном і плющем. Дверей без зовнішньої ручки — їх можна відчинити лише зсередини: так Гант ілюструє вірш з Апокаліпсису «Ось стою при дверях і стукаю».\nГант писав уночі при місячному світлі в саду, щоб точно передати освітлення. Пізнішу велику версію повезли в світовий тур 1905–1907 років, і її бачили мільйони людей у Канаді, Австралії та Південній Африці — це, мабуть, найвідоміша релігійна картина вікторіанської епохи.',
       'Christus mit einer Laterne klopft nachts an eine von Unkraut und Efeu überwucherte Tür. Die Tür hat außen keine Klinke – sie lässt sich nur von innen öffnen: So illustriert Hunt das Wort aus der Offenbarung „Siehe, ich stehe vor der Tür und klopfe an“.\nHunt malte nachts im Mondlicht im Garten, um die Beleuchtung genau zu treffen. Eine spätere große Fassung ging 1905–1907 auf Welttournee und wurde von Millionen in Kanada, Australien und Südafrika gesehen – wohl das berühmteste religiöse Bild der viktorianischen Zeit.',

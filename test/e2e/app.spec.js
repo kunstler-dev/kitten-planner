@@ -13,6 +13,11 @@ let app;
 let page;
 let dataDir;
 const problems = [];
+let current = '';
+// eslint-disable-next-line no-empty-pattern -- Playwright requires a destructured fixtures argument
+test.beforeEach(({}, info) => {
+  current = info.title;
+});
 
 test.beforeAll(async () => {
   dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kp-e2e-'));
@@ -22,9 +27,10 @@ test.beforeAll(async () => {
     env: { ...process.env, KITTEN_PLANNER_DATA_DIR: dataDir },
   });
   page = await app.firstWindow();
-  page.on('pageerror', (e) => problems.push(`pageerror: ${e.message}`));
+  page.on('pageerror', (e) => problems.push(`[${current}] pageerror: ${e.message}`));
   page.on('console', (m) => {
-    if (m.type() === 'error' || m.text().startsWith('i18n missing')) problems.push(`${m.type()}: ${m.text()}`);
+    if (m.type() === 'error' || m.text().startsWith('i18n missing'))
+      problems.push(`[${current}] ${m.type()}: ${m.text()}`);
   });
   await page.setViewportSize({ width: 1360, height: 860 });
   await page.waitForSelector('body.ready');

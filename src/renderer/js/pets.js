@@ -33,6 +33,11 @@ function stop() {
 function build() {
   enabled = state.data.settings.pets !== false;
   el = h('div', { class: 'pet-corner', 'aria-hidden': 'true' });
+  // Start a moment after boot so its shaders don't compile at the same time as the kitten's.
+  setTimeout(buildScene, 900);
+}
+
+function buildScene() {
   try {
     scene = createPetCorner();
   } catch (err) {
@@ -51,6 +56,7 @@ function build() {
   } else {
     el.append(h('div', { class: 'pet-fallback' }, '😴🐈 🧶🐈‍⬛ 🐕'));
   }
+  start();
 }
 
 /** The pet corner element for the sidebar (created once, re-used on every nav render). */

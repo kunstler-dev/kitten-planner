@@ -13,6 +13,9 @@ export function createStage(width, height) {
     return null;
   }
   if (!renderer.getContext()) return null;
+  // Synchronous shader validation is a debugging aid; software GL (SwiftShader) can report spurious failures.
+  renderer.debug.checkShaderErrors = false;
+  canvas.addEventListener('webglcontextlost', () => console.warn(`webgl context lost (${width}x${height})`));
   renderer.setPixelRatio(Math.min((window.devicePixelRatio || 1) * 1.5, 3));
   renderer.setSize(width, height, false);
   canvas.style.width = `${width}px`;

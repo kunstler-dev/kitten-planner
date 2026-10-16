@@ -84,9 +84,10 @@ export function openArt(dateKey) {
         const img = h('img', { alt: tx(p.t) });
         const frame = h('div', { class: 'art-frame loading' }, img);
         img.onload = () => frame.classList.remove('loading');
-        loadArtImage(img, p, () =>
-          frame.replaceChildren(h('div', { class: 'art-noimg' }, icon('sparkle', 28), h('span', {}, t('art.noImage')))),
-        );
+        loadArtImage(img, p, () => {
+          frame.classList.remove('loading');
+          frame.replaceChildren(h('div', { class: 'art-noimg' }, icon('sparkle', 28), h('span', {}, t('art.noImage'))));
+        });
         const prev = addDays(current, -1);
         const next = addDays(current, 1);
         wrap.replaceChildren(

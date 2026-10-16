@@ -1,6 +1,8 @@
 // Seasonal looks: which season is active (automatic by date or chosen in Settings), its colour
 // grading (css/seasons.css via html[data-season]) and which ambient effects it offers.
 
+import { PERSONAL } from '../personal.js';
+
 export const SEASONS = ['autumn', 'halloween', 'winter', 'christmas', 'spring', 'summer', 'birthday'];
 
 /** Effects each season can show; every one has its own on/off switch in Settings. */
@@ -27,13 +29,14 @@ export const SEASON_SOUND = {
   birthday: 'musicbox',
 };
 
-export const BIRTHDAY = { month: 11, day: 3 };
-
-/** Season for a local date key (YYYY-MM-DD) when Settings say "auto". */
-export function seasonForDate(key) {
+/**
+ * Season for a local date key (YYYY-MM-DD) when Settings say "auto". `birthday` is 'MM-DD'
+ * (from personal.js; empty means the birthday look only appears when chosen by hand).
+ */
+export function seasonForDate(key, birthday = PERSONAL.birthday) {
   const m = Number(key.slice(5, 7));
   const d = Number(key.slice(8, 10));
-  if (m === BIRTHDAY.month && d === BIRTHDAY.day) return 'birthday';
+  if (birthday && key.slice(5) === birthday) return 'birthday';
   if ((m === 10 && d >= 24) || (m === 11 && d <= 1)) return 'halloween';
   if (m === 12 || (m === 1 && d <= 6)) return 'christmas';
   if (m <= 2) return 'winter';
@@ -43,10 +46,10 @@ export function seasonForDate(key) {
 }
 
 /** 'auto' | a season | 'none' → the season actually shown (or null for the plain look). */
-export function resolveSeason(choice, todayKey) {
+export function resolveSeason(choice, todayKey, birthday) {
   if (choice === 'none') return null;
   if (SEASONS.includes(choice)) return choice;
-  return seasonForDate(todayKey);
+  return seasonForDate(todayKey, birthday);
 }
 
 /** Effects that are both offered by the season and switched on. */

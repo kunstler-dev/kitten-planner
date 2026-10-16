@@ -28,6 +28,10 @@ jobs:
       - run: npm ci
       - name: Download painting-of-the-day images
         run: node scripts/fetch-art.js
+      - name: Personal touches (from repository secret)
+        run: node scripts/personal-config.js
+        env:
+          PERSONAL_CONFIG: ${{ secrets.PERSONAL_CONFIG }}
       - name: Build site/
         run: node scripts/build-web.js
         env:

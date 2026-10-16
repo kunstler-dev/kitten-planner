@@ -12,7 +12,8 @@
 - **Seasons**: autumn, Halloween, winter, Christmas, spring and summer looks (automatic by date or chosen in
   Settings) with seasonal colours, falling leaves from trees, rain, snow, garland, petals, fireflies, bats and more —
   every effect can be switched off — plus hats for the kitten and the pets and an optional ambient sound.
-- **3 November**: a birthday look and a greeting from all the pets.
+- **Her birthday**: a birthday look and a greeting from all the pets (date and words injected from a
+  repository secret, see `scripts/personal-config.js`).
 - **Painting quiz**: guess the artist or the painting across all 479 calendar paintings.
 - Fixed a stray "null" under the commercial roadmap summary.
 

@@ -3,7 +3,8 @@
 [![Build](https://github.com/kunstler-dev/kitten-planner/actions/workflows/build.yml/badge.svg)](https://github.com/kunstler-dev/kitten-planner/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/kunstler-dev/kitten-planner)](https://github.com/kunstler-dev/kitten-planner/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lavender.svg)](LICENSE)
-![Platform](https://img.shields.io/badge/platform-Windows-blue)
+![Platform](<https://img.shields.io/badge/platform-Windows%20%7C%20iPhone%20(PWA)-blue>)
+[![Live demo](https://img.shields.io/badge/live%20demo-open%20in%20browser-ff9fb6)](https://kunstler-dev.github.io/kitten-planner/)
 
 A cozy but focused **Windows desktop workspace** for a founder opening a small
 **bookbinding workshop & souvenir shop** (handmade faux-leather notebooks and books) in
@@ -13,10 +14,31 @@ with invoice PDFs, a document archive, a planner with a **painting-of-the-day** 
 assistant with a little robot named **Auerilus** — and a **3D kitten** that follows your cursor,
 naps, purrs and jumps onto the buttons you are about to click.
 
-The interface is in **Ukrainian** with a one-click switch to **German**, in a light or dark theme.
-All data stays **on the local machine**.
+The same code also runs on the **phone** as an installable web app, and both devices stay in sync
+through the user's **own Google Drive** — no server in between.
+The interface is in **Ukrainian** with a one-click switch to **German**, in a light or dark theme,
+with seasonal looks (autumn rain and falling leaves, Halloween, Christmas, spring, summer).
+
+**▶ Try it in the browser: https://kunstler-dev.github.io/kitten-planner/** (data stays in your browser)
 
 ![Home](docs/screenshots/home.png)
+
+## Highlights
+
+- **One codebase, two platforms.** The Electron renderer is plain ES modules; on the phone the same files
+  are served from GitHub Pages and a browser implementation of the preload API (`window.api`: IndexedDB,
+  downloads, print-to-PDF, OAuth redirect) is swapped in at boot. No framework, no bundler.
+- **Serverless sync with a real merge.** Data lives in Drive's hidden `appDataFolder`; every sync is a
+  pure, unit-tested **three-way merge** (per record and per field) against the last synced snapshot, so
+  offline edits on both devices are combined instead of overwritten.
+- **Security by default.** Sandboxed renderer with context isolation and a strict CSP, a single preload
+  bridge, OAuth with PKCE on the desktop, API key and refresh token encrypted with `safeStorage`, path
+  validation for stored documents, OAuth client ids and personal data injected from CI secrets.
+- **Tested end to end.** Unit tests (`node:test`) for the store, merge, pricing, seasons and i18n
+  completeness; Playwright drives the real Electron app and the phone build (iPhone viewport, faked Drive).
+  CI builds the Windows `.exe`, publishes releases and deploys the phone version.
+- **Made with love.** A three.js kitten that jumps onto the button you are about to press, a robot
+  playing tag with it, a pet corner, ~470 paintings with stories and a quiz about them.
 
 ## Features
 
@@ -30,6 +52,8 @@ All data stays **on the local machine**.
 | **Plans · Calendar · Notes** | Goal-based task lists with progress, month calendar with events and deadlines from all sections, notes with colours, pinning and search.                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **AI assistant**             | Two modes: sign in to your own **ChatGPT account** inside the app (an isolated, persistent browser partition limited to chatgpt.com and its login providers), or use the OpenAI API with your own key (stored encrypted via Windows DPAPI, optional business context, answers can be saved as notes). The robot **Auerilus** lives in a little playground next to the chat and plays tag with the kitten.                                                                                                                                                                                         |
 | **Painting of the day**      | Every calendar day from October 2026 to the end of 2027 hides an easter egg: one of ~470 famous paintings (Old Masters to early modernism) with a bilingual story — style, how and where it was painted, its history and where it hangs today. Holidays and artists' birthdays get fitting pieces. Images are downloaded from Wikimedia Commons at build time (public-domain works only) and bundled into the `.exe`.                                                                                                                                                                             |
+| **Seasons**                  | Automatic by date or chosen by hand: autumn (rain, trees dropping leaves), Halloween, Christmas (snow, garland, a small tree), winter, spring and summer — each with its own colour grading for both themes, canvas effects behind the UI, 3D hats for the pets and optional synthesised ambience (WebAudio, off by default). A birthday look with a greeting from all the pets.                                                                                                                                                                                                                  |
+| **Painting quiz**            | "Who painted it?" and "Which one is theirs?" over the whole painting collection, with streaks and a synced best score.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **3D kitten**                | A small tortoiseshell toon kitten (three.js, built from primitives): calmly follows the cursor without getting in the way, **jumps onto the button you hover** while deciding where to go, falls asleep when the mouse rests, purrs with hearts when petted and plays with Auerilus in the AI tab. Never blocks clicks; falls back to a flat SVG kitten without WebGL. At the bottom of the sidebar a **pet corner** shows two more cats — Sefirka asleep on her cushion and tuxedo Gudsyk chasing a ball of yarn — and Bublyk the corgi dozing on his mat, who wakes up and wags when you hover. |
 
 |                                                                     |                                                         |
@@ -38,7 +62,31 @@ All data stays **on the local machine**.
 | ![Finance](docs/screenshots/finance.png)                            | ![German, dark theme](docs/screenshots/dark-german.png) |
 | ![Calendar with painting of the day](docs/screenshots/calendar.png) | ![AI tab with Auerilus](docs/screenshots/ai-tab.png)    |
 
+| Phone                                                          | Phone menu                                                               | Birthday greeting                                                             |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| <img src="docs/screenshots/phone.png" width="240" alt="Phone"> | <img src="docs/screenshots/phone-menu.png" width="240" alt="Phone menu"> | <img src="docs/screenshots/birthday.png" width="420" alt="Birthday greeting"> |
+
 <p align="center"><img src="docs/screenshots/pets.png" alt="Pet corner: Sefirka, Gudsyk and Bublyk the corgi" width="312"></p>
+
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph Desktop["Windows (Electron)"]
+    M["main process<br/>store · secrets · OpenAI · Google OAuth (PKCE)"]
+    P["preload<br/>window.api"]
+    R1["renderer<br/>views · kitten · seasons · sync engine"]
+    M <-- IPC --> P <--> R1
+  end
+  subgraph Phone["iPhone (PWA on GitHub Pages)"]
+    W["platform/web.js<br/>window.api: IndexedDB · OAuth redirect"]
+    R2["same renderer"]
+    W <--> R2
+  end
+  D[("Google Drive<br/>appDataFolder")]
+  R1 -- "three-way merge" --> D
+  R2 -- "three-way merge" --> D
+```
 
 ## Download
 
@@ -68,6 +116,19 @@ Computer and phone share their data through the user's **own Google Drive** (Set
 
 Setting it up needs a Google Cloud OAuth client — see [docs/google-sync.md](docs/google-sync.md).
 
+## Secrets & personal data
+
+Nothing private is committed. Build-time values come from repository secrets:
+
+| Secret                                                     | Used for                                                                                        |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `GOOGLE_WEB_CLIENT_ID`                                     | phone sign-in (written into the Pages build)                                                    |
+| `GOOGLE_DESKTOP_CLIENT_ID`, `GOOGLE_DESKTOP_CLIENT_SECRET` | desktop sign-in (`scripts/google-config.js` → `src/google-config.json`)                         |
+| `PERSONAL_CONFIG`                                          | birthday date and greeting words (`scripts/personal-config.js` → `src/renderer/js/personal.js`) |
+
+`PERSONAL_CONFIG` is JSON: `{ "birthday": "MM-DD", "title": { "uk": "…", "de": "…" }, "love": { "uk": "…", "de": "…" } }`.
+Without it the app uses neutral placeholders (no automatic birthday, generic greeting).
+
 ## Tech stack
 
 - **Electron** (sandboxed renderer, context isolation, strict CSP, single preload bridge)
@@ -77,6 +138,7 @@ Setting it up needs a Google Cloud OAuth client — see [docs/google-sync.md](do
 - Tests: **node:test** (store, OpenAI streaming, price calculation, i18n completeness) and
   **Playwright** driving the real Electron app and the phone build (iPhone viewport, faked Google Drive) end-to-end
 - **GitHub Actions**: lint + format + unit + e2e on Linux, `.exe` build on `windows-latest`, release on `v*` tags
+  or a manual run, phone version deployed to **GitHub Pages**
 
 ## Project structure
 
@@ -98,9 +160,12 @@ src/renderer/
   js/data/art/       painting-of-the-day entries (uk + de), schedule and pinned dates
   js/sync/           Google Drive client, three-way merge, sync engine (shared by desktop and phone)
   js/platform/       browser implementation of window.api for the phone (IndexedDB, OAuth redirect)
+  js/seasons/        season rules (pure), canvas effects, WebAudio ambience, birthday greeting
+  js/personal.js     placeholders for personal data, filled from a secret in CI
+  js/views/          one module per section (incl. quiz.js)
+src/main/google.js   Google sign-in for the desktop (loopback + PKCE)
 scripts/fetch-art.js resolves painting images via the Wikipedia API and bundles them
 scripts/build-web.js builds the phone version into site/ (manifest, service worker) for GitHub Pages
-  js/views/          one module per section
 test/unit, test/e2e  node:test and Playwright suites
 ```
 

@@ -3043,6 +3043,14 @@ input[type='checkbox'] {
     border-radius: 22px 22px 0 0;
     padding-bottom: calc(18px + env(safe-area-inset-bottom));
   }
+  /* One column: the sticky frame would slide over the title and text while scrolling. */
+  .art-frame {
+    position: static;
+    min-height: 200px;
+  }
+  .art-frame img {
+    max-height: 52dvh;
+  }
   .lang-switch button {
     padding: 4px 8px;
   }

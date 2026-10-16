@@ -63,6 +63,10 @@ jobs:
           GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
           GOOGLE_DESKTOP_CLIENT_ID: ${{ secrets.GOOGLE_DESKTOP_CLIENT_ID }}
           GOOGLE_DESKTOP_CLIENT_SECRET: ${{ secrets.GOOGLE_DESKTOP_CLIENT_SECRET }}
+      - name: Personal touches (from repository secret)
+        run: node scripts/personal-config.js
+        env:
+          PERSONAL_CONFIG: ${{ secrets.PERSONAL_CONFIG }}
       - name: Build portable .exe
         run: npx electron-builder --win portable --x64 --publish never
         env:

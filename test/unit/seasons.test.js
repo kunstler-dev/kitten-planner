@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 
 const load = () => import('../../src/renderer/js/seasons/season.js');
 
-test('automatic season follows the calendar, with Halloween, Christmas and her birthday', async () => {
+test('automatic season follows the calendar, with Halloween, Christmas and the configured birthday', async () => {
   const { seasonForDate } = await load();
   const cases = {
     '2026-10-16': 'autumn',
@@ -21,14 +21,18 @@ test('automatic season follows the calendar, with Halloween, Christmas and her b
     '2027-06-15': 'summer',
     '2027-09-01': 'autumn',
   };
-  for (const [day, season] of Object.entries(cases)) assert.equal(seasonForDate(day), season, day);
+  for (const [day, season] of Object.entries(cases)) assert.equal(seasonForDate(day, '11-03'), season, day);
+  // Without a configured birthday (the committed placeholder) that day is just autumn.
+  assert.equal(seasonForDate('2026-11-03', ''), 'autumn');
+  assert.equal(seasonForDate('2027-04-20', '04-20'), 'birthday');
 });
 
 test('manual choice and effect switches', async () => {
   const { resolveSeason, activeFx, SEASONS, SEASON_FX, SEASON_SOUND } = await load();
   assert.equal(resolveSeason('none', '2026-11-03'), null);
   assert.equal(resolveSeason('spring', '2026-11-03'), 'spring');
-  assert.equal(resolveSeason('auto', '2026-11-03'), 'birthday');
+  assert.equal(resolveSeason('auto', '2026-11-03', '11-03'), 'birthday');
+  assert.equal(resolveSeason('auto', '2026-11-03', ''), 'autumn');
   assert.deepEqual(activeFx('autumn', { rain: false }), ['leaves', 'decor']);
   assert.deepEqual(activeFx(null, {}), []);
   for (const s of SEASONS) {

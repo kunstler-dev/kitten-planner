@@ -616,7 +616,7 @@ export default {
   'season.sound.fire': 'Kaminknistern',
   'season.sound.birds': 'Vögel & Brise',
   'season.sound.musicbox': 'Spieluhr',
-  'bday.title': 'Alles Gute zum Geburtstag, Saschenka! 🎉',
+  'bday.title': 'Alles Gute zum Geburtstag! 🎉',
   'bday.lead': 'Heute haben sich alle Tierchen versammelt, um dir zu gratulieren:',
   'bday.open': 'Glückwünsche',
   'bday.thanks': 'Danke, ihr Lieben! 💜',
@@ -630,5 +630,4 @@ export default {
   'bday.msg.gudzyk': 'Ich schenke dir mein bestes Wollknäuel — möge sich im Leben alles leicht entwirren 🧶',
   'bday.msg.bublyk': 'Wuff! Du bist der beste Mensch der Welt — offiziell, ich hab’s geprüft 🐶',
   'bday.msg.auerilus': 'Piep-piep! Berechnung abgeschlossen: Deine Werkstatt wird die gemütlichste in Coburg ✨',
-  'bday.love': 'Saschenka, meine Prinzessin, alles Gute zum Geburtstag! Wir bleiben für immer zusammen 💍',
 };

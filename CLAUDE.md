@@ -57,7 +57,9 @@ bookbinding workshop + souvenir shop in Coburg (Bavaria, Germany).
   built with `buildCat()` from `kitten3d.js` and a corgi). Keep WebGL contexts few — the robot view is created once and reused.
 - Seasons (`js/seasons/`): `season.js` (pure: date → season, effects per season, pub/sub for outfits), `index.js`
   (applies `html[data-season]`, effects, sound), `fx.js` (canvas behind the UI + SVG decor), `sound.js` (WebAudio),
-  `birthday.js` (3 Nov card). Palettes in `css/seasons.css`; 3D hats in `outfits.js` (`setOutfit` on each view).
+  `birthday.js` (greeting card). **Personal data** (her birthday, the greeting's title and closing line)
+  lives only in the `PERSONAL_CONFIG` secret: `scripts/personal-config.js` writes it into `js/personal.js` in CI;
+  the committed file keeps neutral placeholders — never commit real names or dates. Palettes in `css/seasons.css`; 3D hats in `outfits.js` (`setOutfit` on each view).
   Season/effect/sound settings are device-only (`DEVICE_SETTINGS`). Painting quiz: `views/quiz.js`.
 - Kitten: `kitten.js` (behaviour state machine: follow / approach / crouch / jump / perched; sleep & purr),
   `kitten3d.js` (three.js toon cat, poses lerped per frame), `kitten-svg.js` (fallback). It must never block clicks

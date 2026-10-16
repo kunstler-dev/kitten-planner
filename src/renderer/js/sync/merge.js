@@ -5,7 +5,18 @@
 // other keeps the edit.
 
 /** Settings that belong to one device (look & feel) and are never synced. */
-export const DEVICE_SETTINGS = ['lang', 'theme', 'kitten', 'kittenSpeed', 'pets', 'chatMode'];
+export const DEVICE_SETTINGS = [
+  'lang',
+  'theme',
+  'kitten',
+  'kittenSpeed',
+  'pets',
+  'chatMode',
+  'season',
+  'fx',
+  'sound',
+  'bdaySeen',
+];
 
 const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 const hasId = (x) => isObj(x) && (typeof x.id === 'string' || typeof x.id === 'number');

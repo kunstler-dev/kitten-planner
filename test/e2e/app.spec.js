@@ -199,6 +199,29 @@ test('kitten jumps onto a button the user hovers', async () => {
   await snap(page, '11-kitten-perch');
 });
 
+test('seasons, birthday greeting and painting quiz', async () => {
+  await go('settings');
+  await page.selectOption('#season-select', 'christmas');
+  await expect(page.locator('html')).toHaveAttribute('data-season', 'christmas');
+  await expect(page.locator('.season-garland svg')).toHaveCount(1);
+  await page.selectOption('#season-select', 'birthday');
+  await page.click('#season button:has-text("🎁")');
+  await expect(page.locator('.bday-line')).toHaveCount(6);
+  await page.waitForTimeout(5000);
+  await snap(page, '13-birthday');
+  await page.keyboard.press('Escape');
+  await page.selectOption('#season-select', 'none');
+  await expect(page.locator('html')).not.toHaveAttribute('data-season', /.+/);
+  await page.selectOption('#season-select', 'auto');
+
+  await go('quiz');
+  await page.locator('.quiz-option, .quiz-tile').first().click();
+  await expect(page.locator('.quiz-result')).toBeVisible();
+  await snap(page, '14-quiz');
+  await page.click('.quiz-result button');
+  await expect(page.locator('.quiz-result')).toHaveCount(0);
+});
+
 test('everything was saved to disk and no errors occurred', async () => {
   await go('settings');
   await page.fill('.settings-grid input.input >> nth=0', 'Olena');
@@ -215,5 +238,6 @@ test('everything was saved to disk and no errors occurred', async () => {
   expect(saved.documents[0].deadline).toBe('2030-01-15');
   expect(saved.notes[0].title).toBe('Ідеї для бренду');
   expect(saved.events[0].time).toBe('14:30');
+  expect(saved.quiz.total).toBe(1);
   expect(problems).toEqual([]);
 });

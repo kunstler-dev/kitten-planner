@@ -12,8 +12,11 @@ import { renderTasks } from './views/tasks.js';
 import { renderCalendar } from './views/calendar.js';
 import { renderChat, initChatEvents } from './views/chat.js';
 import { renderSettings } from './views/settings.js';
+import { renderQuiz } from './views/quiz.js';
 import { initKitten } from './kitten.js';
 import { initSync } from './sync/sync.js';
+import { initSeasons } from './seasons/index.js';
+import { maybeShowBirthday } from './seasons/birthday.js';
 
 registerView('home', renderHome);
 registerView('legal', (root, params) => renderLaunch(root, { ...params, kind: 'legal' }));
@@ -26,6 +29,7 @@ registerView('calendar', renderCalendar);
 registerView('notes', renderNotes);
 registerView('chat', renderChat);
 registerView('settings', renderSettings);
+registerView('quiz', renderQuiz);
 
 const view = document.getElementById('view');
 
@@ -50,6 +54,7 @@ async function boot() {
   renderTopbar();
   renderView();
   initKitten({ enabled: state.data.settings.kitten, speed: state.data.settings.kittenSpeed });
+  initSeasons();
 
   // Ctrl+1..9 jumps between sections in sidebar order.
   const order = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.id));
@@ -62,6 +67,7 @@ async function boot() {
     }
   });
   document.body.classList.add('ready');
+  maybeShowBirthday();
   initSync().catch(() => {});
 }
 

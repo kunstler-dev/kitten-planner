@@ -40,8 +40,14 @@ export function defaultData() {
       lang: 'uk',
       theme: 'light',
       chatMode: 'account',
+      season: 'auto',
+      fx: {},
+      sound: false,
+      bdaySeen: '',
     },
     art: { opened: {} },
+    // Painting quiz: totals and best streak.
+    quiz: { best: 0, right: 0, total: 0 },
   };
 }
 
@@ -76,6 +82,7 @@ export function normalize(raw) {
   };
   out.settings = { ...base.settings, ...(raw.settings || {}) };
   out.art = { opened: isObj(raw.art?.opened) ? raw.art.opened : {} };
+  out.quiz = { ...base.quiz, ...(raw.quiz && typeof raw.quiz === 'object' ? raw.quiz : {}) };
   out.version = DATA_VERSION;
   return out;
 }

@@ -1,6 +1,7 @@
 // AI-tab playground: the robot Auerilus and the kitten play tag inside a small card.
 // Takes over the kitten via setKittenDirector() while the card is on screen.
 import { createRobot3D } from './robot3d.js';
+import { onSeasonChange } from './seasons/season.js';
 import { setKittenDirector } from './kitten.js';
 
 let area = null;
@@ -161,7 +162,10 @@ export function mountPlayground(cardEl) {
   area = cardEl;
   if (!first) return;
   // One WebGL context for the robot for the whole session; re-mounting just re-attaches it.
-  cachedView ||= createRobot3D() || fallbackRobot();
+  if (!cachedView) {
+    cachedView = createRobot3D() || fallbackRobot();
+    onSeasonChange((season) => cachedView.setOutfit?.(season));
+  }
   view = cachedView;
   robotEl = document.createElement('div');
   robotEl.id = 'robot';

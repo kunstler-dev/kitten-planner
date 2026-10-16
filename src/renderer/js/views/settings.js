@@ -4,9 +4,12 @@ import { t } from '../i18n.js';
 import { MODELS, resetKeyStatus, chatErrorText } from './chat.js';
 import { setKittenEnabled, setKittenSpeed } from '../kitten.js';
 import { setPetsEnabled } from '../pets.js';
-import { applyLang, applyTheme } from '../app-shell.js';
+import { applyLang, applyTheme, renderTopbar } from '../app-shell.js';
 import { syncStatus, onSyncStatus, syncNow, connectCloud, disconnectCloud, WEB_APP_URL } from '../sync/sync.js';
 import { relativeTime } from '../dates.js';
+import { SEASONS, SEASON_FX, SEASON_SOUND } from '../seasons/season.js';
+import { effectiveSeason, applySeason, syncSound } from '../seasons/index.js';
+import { showBirthday } from '../seasons/birthday.js';
 
 const BUSINESS_FIELDS = [
   ['company', 'set.company', 'set.companyPlaceholder'],
@@ -21,6 +24,14 @@ const BUSINESS_FIELDS = [
 ];
 
 const isWeb = () => window.api.platform === 'web';
+const toggle = (checked, onchange, label) =>
+  h(
+    'label',
+    { class: 'toggle' },
+    h('input', { type: 'checkbox', checked, onchange }),
+    h('span', { class: 'toggle-track' }),
+    h('span', {}, label),
+  );
 let unsubscribeSync = null;
 
 /** "Sync with the phone" card; repaints itself on sync status changes (never the whole page). */
@@ -96,6 +107,70 @@ function syncCard() {
   return card;
 }
 
+/** "Season & mood" card: season choice, per-effect switches, ambient sound. */
+function seasonCard() {
+  const card = h('section', { class: 'card season-card', id: 'season' });
+  const paint = () => {
+    const d = state.data.settings;
+    const choice = d.season || 'auto';
+    const current = effectiveSeason();
+    const setFx = (key, on) => {
+      update((x) => (x.settings.fx = { ...(x.settings.fx || {}), [key]: on }), { silent: true });
+      applySeason();
+    };
+    card.replaceChildren(
+      h('h2', {}, icon('sparkle', 18), t('season.title')),
+      field(
+        t('season.choose'),
+        h(
+          'select',
+          {
+            class: 'input',
+            id: 'season-select',
+            onchange: (e) => {
+              update((x) => (x.settings.season = e.target.value), { silent: true });
+              applySeason();
+              renderTopbar();
+              paint();
+            },
+          },
+          ['auto', ...SEASONS, 'none'].map((s) => h('option', { value: s, selected: s === choice }, t(`season.${s}`))),
+        ),
+      ),
+      choice === 'auto' && current
+        ? h('div', { class: 'muted small' }, t('season.now', { season: t(`season.${current}`) }))
+        : null,
+      current
+        ? h(
+            'div',
+            { class: 'season-fx' },
+            SEASON_FX[current].map((key) =>
+              toggle(
+                d.fx?.[key] !== false,
+                (e) => setFx(key, e.target.checked),
+                t(key === 'critters' ? `season.fx.critters.${current}` : `season.fx.${key}`),
+              ),
+            ),
+            toggle(
+              Boolean(d.sound),
+              (e) => {
+                update((x) => (x.settings.sound = e.target.checked), { silent: true });
+                syncSound();
+                renderTopbar();
+              },
+              t(`season.sound.${SEASON_SOUND[current]}`),
+            ),
+          )
+        : null,
+      current === 'birthday'
+        ? h('button', { class: 'btn btn-soft', onclick: () => showBirthday() }, `🎁 ${t('bday.open')}`)
+        : null,
+    );
+  };
+  paint();
+  return card;
+}
+
 export async function renderSettings(root, params = {}) {
   const d = state.data;
   const info = await window.api.appInfo();
@@ -118,15 +193,6 @@ export async function renderSettings(root, params = {}) {
     { class: 'small muted' },
     key.hasKey ? (key.encrypted ? t('set.keyEncrypted') : t('set.keyLocal')) : t('set.keyNone'),
   );
-  const toggle = (checked, onchange, label) =>
-    h(
-      'label',
-      { class: 'toggle' },
-      h('input', { type: 'checkbox', checked, onchange }),
-      h('span', { class: 'toggle-track' }),
-      h('span', {}, label),
-    );
-
   const address = h('textarea', {
     class: 'input',
     rows: 3,
@@ -210,6 +276,7 @@ export async function renderSettings(root, params = {}) {
         ),
         h('div', { class: 'muted small' }, t('set.kittenHint')),
       ),
+      seasonCard(),
       h(
         'section',
         { class: 'card span-2' },

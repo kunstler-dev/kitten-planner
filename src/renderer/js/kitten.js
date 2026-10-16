@@ -3,6 +3,7 @@
 // jumps on top of that button (pressing it down) and hops from button to button with you.
 // A "director" (the AI-tab playground) can take over to play with the robot.
 import { createKitten3D } from './kitten3d.js';
+import { onSeasonChange } from './seasons/season.js';
 import { createKittenSvg } from './kitten-svg.js';
 
 export const PERCH_TARGETS =
@@ -367,6 +368,7 @@ export function initKitten({ enabled: on = true, speed = 1 } = {}) {
   });
 
   setKittenEnabled(on);
+  onSeasonChange((season) => view.setOutfit?.(season));
   rafId = requestAnimationFrame(tick);
 }
 

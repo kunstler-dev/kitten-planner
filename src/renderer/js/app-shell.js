@@ -4,6 +4,8 @@ import { state, update } from './state.js';
 import { t, setLang, getLang, LANG_LABELS } from './i18n.js';
 import { navigate, route, getView } from './router.js';
 import { petCorner } from './pets.js';
+import { seasonScene } from './seasons/fx.js';
+import { effectiveSeason, syncSound } from './seasons/index.js';
 import { syncStatus, onSyncStatus, syncNow, connectCloud } from './sync/sync.js';
 import { relativeTime } from './dates.js';
 
@@ -26,6 +28,7 @@ export const NAV_GROUPS = [
       { id: 'calendar', icon: 'calendar' },
       { id: 'notes', icon: 'note' },
       { id: 'chat', icon: 'chat' },
+      { id: 'quiz', icon: 'palette' },
     ],
   },
 ];
@@ -56,6 +59,7 @@ export function renderNav() {
       ),
     ),
     h('div', { class: 'nav-spacer' }),
+    seasonScene(),
     petCorner(),
     item({ id: 'settings', icon: 'settings' }),
   );
@@ -109,7 +113,25 @@ export function renderTopbar() {
   const sync = syncButton();
   unsubscribeSync?.();
   unsubscribeSync = onSyncStatus(sync.paint);
+  const season = effectiveSeason();
+  const sound = state.data.settings.sound;
   box.replaceChildren(
+    season
+      ? h(
+          'button',
+          {
+            class: `sound-switch${sound ? ' on' : ''}`,
+            id: 'sound-toggle',
+            title: sound ? t('season.soundOff') : t('season.soundOn'),
+            onclick: () => {
+              update((d) => (d.settings.sound = !d.settings.sound), { silent: true });
+              syncSound();
+              renderTopbar();
+            },
+          },
+          icon(sound ? 'volume' : 'volumeOff', 17),
+        )
+      : null,
     sync.btn,
     h(
       'div',

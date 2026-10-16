@@ -1,0 +1,38 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+
+const load = () => import('../../src/renderer/js/seasons/season.js');
+
+test('automatic season follows the calendar, with Halloween, Christmas and her birthday', async () => {
+  const { seasonForDate } = await load();
+  const cases = {
+    '2026-10-16': 'autumn',
+    '2026-10-24': 'halloween',
+    '2026-10-31': 'halloween',
+    '2026-11-01': 'halloween',
+    '2026-11-02': 'autumn',
+    '2026-11-03': 'birthday',
+    '2026-11-04': 'autumn',
+    '2026-12-01': 'christmas',
+    '2027-01-06': 'christmas',
+    '2027-01-07': 'winter',
+    '2027-02-28': 'winter',
+    '2027-03-01': 'spring',
+    '2027-06-15': 'summer',
+    '2027-09-01': 'autumn',
+  };
+  for (const [day, season] of Object.entries(cases)) assert.equal(seasonForDate(day), season, day);
+});
+
+test('manual choice and effect switches', async () => {
+  const { resolveSeason, activeFx, SEASONS, SEASON_FX, SEASON_SOUND } = await load();
+  assert.equal(resolveSeason('none', '2026-11-03'), null);
+  assert.equal(resolveSeason('spring', '2026-11-03'), 'spring');
+  assert.equal(resolveSeason('auto', '2026-11-03'), 'birthday');
+  assert.deepEqual(activeFx('autumn', { rain: false }), ['leaves', 'decor']);
+  assert.deepEqual(activeFx(null, {}), []);
+  for (const s of SEASONS) {
+    assert.ok(SEASON_FX[s]?.length, s);
+    assert.ok(SEASON_SOUND[s], s);
+  }
+});

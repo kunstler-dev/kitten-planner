@@ -1,4 +1,5 @@
 // "Auerilus" — a small friendly toon robot that lives in the AI tab and plays with the kitten.
+import { dressUp } from './outfits.js';
 import { THREE, createStage, toonMaterial, lerp, lerpAngle } from './three-stage.js';
 
 const W = 104;
@@ -182,6 +183,9 @@ export function createRobot3D() {
       spinLeft = Math.PI * 2;
     },
     tick,
+    setOutfit(season) {
+      dressUp(bot.head, season, { top: 0.36, x: 0 });
+    },
     dispose() {
       renderer.dispose();
     },

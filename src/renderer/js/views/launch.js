@@ -294,7 +294,7 @@ export function renderLaunch(root, params = {}) {
         },
       ),
     ),
-    kind === 'legal' ? h('div', { class: 'disclaimer' }, icon('lock', 14), t('launch.disclaimer')) : null,
+    kind === 'legal' ? h('div', { class: 'disclaimer' }, icon('lock', 14), t('launch.disclaimer')) : '',
     h('div', { class: 'phases' }, phases),
   );
 

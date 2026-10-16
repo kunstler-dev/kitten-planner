@@ -3,6 +3,7 @@
 // jumps on top of that button (pressing it down) and hops from button to button with you.
 // A "director" (the AI-tab playground) can take over to play with the robot.
 import { createKitten3D } from './kitten3d.js';
+import { onSeasonChange } from './seasons/season.js';
 import { createKittenSvg } from './kitten-svg.js';
 
 export const PERCH_TARGETS =
@@ -21,6 +22,7 @@ let director = null;
 const pos = { x: 160, y: 500 };
 const vel = { x: 0, y: 0 };
 const mouse = { x: 400, y: 400, inside: false, lastMove: performance.now() };
+let touch = false;
 let facing = 1;
 let mode = 'follow'; // follow | approach | crouch | jump | perched | directed
 let jump = null; // { from, to, t, dur, height, onLand }
@@ -341,7 +343,22 @@ export function initKitten({ enabled: on = true, speed = 1 } = {}) {
     mouse.inside = true;
     if (moved > 3) mouse.lastMove = performance.now();
   });
+  // Phone: no cursor — the kitten trots over to wherever she taps, then naps again.
+  window.addEventListener(
+    'pointerdown',
+    (e) => {
+      touch = e.pointerType !== 'mouse';
+      if (!touch) return;
+      // Stay along the bottom edge so she never covers what is being read.
+      mouse.x = e.clientX;
+      mouse.y = innerHeight - 70;
+      mouse.inside = true;
+      mouse.lastMove = performance.now();
+    },
+    { passive: true },
+  );
   document.addEventListener('mouseover', (e) => {
+    if (touch) return; // taps emulate mouseover; perching is for "thinking with the cursor" only
     const node = e.target.closest?.(PERCH_TARGETS);
     if (node !== hover.el) hover = { el: node || null, since: performance.now() };
   });
@@ -351,6 +368,7 @@ export function initKitten({ enabled: on = true, speed = 1 } = {}) {
   });
 
   setKittenEnabled(on);
+  onSeasonChange((season) => view.setOutfit?.(season));
   rafId = requestAnimationFrame(tick);
 }
 

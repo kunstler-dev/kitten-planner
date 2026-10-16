@@ -3,6 +3,7 @@
 // corner wakes the dog up for a wag and makes the sleepy cat twitch an ear.
 import { THREE, createStage, toonMaterial, lerp } from './three-stage.js';
 import { buildCat } from './kitten3d.js';
+import { dressUp } from './outfits.js';
 
 const W = 208;
 const H = 128;
@@ -292,6 +293,11 @@ export function createPetCorner() {
     },
     setHover(v) {
       hover = v;
+    },
+    setOutfit(season) {
+      dressUp(sleeper.head, season, { top: 0.36 });
+      dressUp(player.head, season, { top: 0.36 });
+      dressUp(dog.head, season, { top: 0.3, scale: 0.85, x: -0.06 });
     },
     tick(dt) {
       time += dt;

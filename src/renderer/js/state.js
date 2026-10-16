@@ -1,6 +1,7 @@
 // Central app state: loaded once from disk, saved (debounced) on every change.
 
 const listeners = new Set();
+const saveListeners = new Set();
 let saveTimer = null;
 
 export const state = {
@@ -41,7 +42,15 @@ export function scheduleSave() {
 export async function flushSave() {
   clearTimeout(saveTimer);
   saveTimer = null;
-  if (state.data) await window.api.saveData(state.data);
+  if (!state.data) return;
+  await window.api.saveData(state.data);
+  saveListeners.forEach((cb) => cb());
+}
+
+/** Called after every save to disk (cloud sync uses it to push local changes). */
+export function onSaved(cb) {
+  saveListeners.add(cb);
+  return () => saveListeners.delete(cb);
 }
 
 window.addEventListener('beforeunload', () => {

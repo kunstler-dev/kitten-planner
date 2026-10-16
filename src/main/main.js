@@ -7,6 +7,8 @@ const { app, BrowserWindow, ipcMain, shell, dialog, safeStorage, Menu, session, 
 const { Store, normalize } = require('./store');
 const { Secrets } = require('./secrets');
 const { streamChat, testKey } = require('./openai');
+const { GoogleAuth } = require('./google');
+const googleConfig = require('../google-config.json');
 
 if (process.env.KITTEN_PLANNER_DATA_DIR) {
   app.setPath('userData', process.env.KITTEN_PLANNER_DATA_DIR);
@@ -80,6 +82,7 @@ app.on('web-contents-created', (_e, contents) => {
   });
 });
 let secrets;
+let google;
 let mainWindow;
 const activeChats = new Map();
 
@@ -309,6 +312,49 @@ function registerIpc() {
       return { name, stored, size: fs.statSync(src).size };
     });
   });
+  ipcMain.handle('docs:has', (_e, stored) => fs.existsSync(docPath(stored)));
+  ipcMain.handle('docs:read', (_e, stored) => {
+    const file = docPath(stored);
+    return fs.existsSync(file) ? new Uint8Array(fs.readFileSync(file)) : null;
+  });
+  ipcMain.handle('docs:write', (_e, { stored, bytes }) => {
+    fs.mkdirSync(docsDir, { recursive: true });
+    fs.writeFileSync(docPath(stored), Buffer.from(bytes));
+    return true;
+  });
+
+  // Cloud sync via the user's Google Drive (the merge itself runs in the renderer).
+  const syncFile = path.join(app.getPath('userData'), 'sync.json');
+  ipcMain.handle('sync:load', () => {
+    try {
+      return JSON.parse(fs.readFileSync(syncFile, 'utf8'));
+    } catch {
+      return {};
+    }
+  });
+  ipcMain.handle('sync:save', (_e, data) => {
+    fs.writeFileSync(`${syncFile}.tmp`, JSON.stringify(data || {}), 'utf8');
+    fs.renameSync(`${syncFile}.tmp`, syncFile);
+    return true;
+  });
+  ipcMain.handle('cloud:status', () => google.status());
+  ipcMain.handle('cloud:connect', async () => {
+    const res = await google.connect();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+    return res;
+  });
+  ipcMain.handle('cloud:disconnect', () => google.disconnect());
+  ipcMain.handle('cloud:token', async (_e, opts) => {
+    try {
+      return await google.token(opts || {});
+    } catch {
+      return null;
+    }
+  });
+
   ipcMain.handle('docs:open', (_e, stored) => shell.openPath(docPath(stored)));
   ipcMain.handle('docs:show', (_e, stored) => shell.showItemInFolder(docPath(stored)));
   ipcMain.handle('docs:remove', (_e, stored) => {
@@ -336,6 +382,13 @@ if (!gotLock) {
       .fromPartition(GPT_PARTITION)
       .setUserAgent(app.userAgentFallback.replace(/ Electron\/\S+/, '').replace(/ kitten-planner\/\S+/i, ''));
     secrets = new Secrets(app.getPath('userData'), safeStorage);
+    google = new GoogleAuth({
+      dir: app.getPath('userData'),
+      safeStorage,
+      config: googleConfig,
+      openBrowser: (url) => shell.openExternal(url),
+      fetchImpl: (...args) => net.fetch(...args),
+    });
     registerIpc();
     createWindow();
   });

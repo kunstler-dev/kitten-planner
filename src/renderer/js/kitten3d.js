@@ -1,6 +1,7 @@
 // 3D kitten renderer: a small toon-shaded tortoiseshell cat built from primitives, rendered into a
 // transparent mini canvas that the controller in kitten.js moves around the window.
 import { THREE, createStage, toonMaterial, paintPatches, lerp, lerpAngle } from './three-stage.js';
+import { dressUp } from './outfits.js';
 
 const W = 104;
 const H = 86;
@@ -304,6 +305,9 @@ export function createKitten3D() {
       look = { x, y };
     },
     tick,
+    setOutfit(season) {
+      dressUp(cat.head, season, { top: 0.36 });
+    },
     dispose() {
       renderer.dispose();
     },

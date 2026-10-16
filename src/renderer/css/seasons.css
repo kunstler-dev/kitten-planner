@@ -1,0 +1,694 @@
+/* ===== Seasonal colour grading (html[data-season], set by js/seasons) ===== */
+:root[data-season='autumn'] {
+  --bg: #f7efe6;
+  --surface: #fffaf4;
+  --surface-2: #f5ebe0;
+  --surface-3: #ecdfd1;
+  --line: #eadccd;
+  --text: #4a3b33;
+  --text-soft: #745f52;
+  --muted: #94806f;
+  --lav-50: #fbefe6;
+  --lav-100: #f6dfcf;
+  --lav-200: #ecc6ad;
+  --lav-400: #d9946a;
+  --lav-500: #c77b4e;
+  --lav-600: #a9603a;
+  --lav-700: #8a4b2c;
+  --pink-50: #fbf4e3;
+  --pink-100: #f5e6bf;
+  --pink-300: #e3c27a;
+  --pink-500: #c99a3c;
+  --edge-primary: #93512f;
+  --edge-soft: #e6c6ae;
+}
+:root[data-season='autumn'][data-theme='dark'] {
+  --bg: #1f1915;
+  --surface: #2a221c;
+  --surface-2: #332921;
+  --surface-3: #3d3128;
+  --line: #43362b;
+  --text: #f2e6da;
+  --text-soft: #d3c1b0;
+  --muted: #a48f7c;
+  --lav-50: #3a2b20;
+  --lav-100: #4a3627;
+  --lav-200: #5e4431;
+  --lav-400: #e0a47a;
+  --lav-500: #d08a5c;
+  --lav-600: #f0b48a;
+  --lav-700: #f7cba9;
+  --pink-50: #3a3020;
+  --pink-100: #4a3d27;
+  --pink-300: #a8884a;
+  --pink-500: #e6bd63;
+  --edge-primary: #7a4226;
+  --edge-soft: #3a2a1f;
+}
+:root[data-season='halloween'] {
+  --bg: #f6f0f6;
+  --surface: #fffbfd;
+  --surface-2: #f3ecf3;
+  --surface-3: #eae0ea;
+  --line: #e8dce8;
+  --text: #3f3448;
+  --text-soft: #685a72;
+  --muted: #8c7f95;
+  --lav-50: #f3ecfa;
+  --lav-100: #e6d9f5;
+  --lav-200: #d2bdee;
+  --lav-400: #9a72cf;
+  --lav-500: #7f55b8;
+  --lav-600: #66409c;
+  --lav-700: #522f82;
+  --pink-50: #fff1e4;
+  --pink-100: #ffe0c2;
+  --pink-300: #f7b27a;
+  --pink-500: #e8833a;
+  --edge-primary: #4f2f7d;
+  --edge-soft: #d6c3ee;
+}
+:root[data-season='halloween'][data-theme='dark'] {
+  --bg: #17121e;
+  --surface: #211a2b;
+  --surface-2: #2a2136;
+  --surface-3: #332842;
+  --line: #3b2e4c;
+  --text: #f3eafb;
+  --text-soft: #cfc0e0;
+  --muted: #9d8db3;
+  --lav-50: #2c2140;
+  --lav-100: #382a52;
+  --lav-200: #4a3770;
+  --lav-400: #b38ff0;
+  --lav-500: #9a72dc;
+  --lav-600: #c9a9ff;
+  --lav-700: #dcc6ff;
+  --pink-50: #3b2618;
+  --pink-100: #4d311d;
+  --pink-300: #b86e33;
+  --pink-500: #ff9a4a;
+  --edge-primary: #4b2d7a;
+  --edge-soft: #2a1f3a;
+}
+:root[data-season='winter'] {
+  --bg: #f3f5f8;
+  --surface: #fdfeff;
+  --surface-2: #eff2f6;
+  --surface-3: #e6eaf0;
+  --line: #e1e6ed;
+  --text: #3c4350;
+  --text-soft: #626b7a;
+  --muted: #87909e;
+  --lav-50: #eef4fa;
+  --lav-100: #dde9f5;
+  --lav-200: #c2d7ec;
+  --lav-400: #7fa6cf;
+  --lav-500: #5f8bbd;
+  --lav-600: #4a72a3;
+  --lav-700: #3a5b85;
+  --pink-50: #f4f0fb;
+  --pink-100: #e8e0f6;
+  --pink-300: #c3b2e6;
+  --pink-500: #9d86d0;
+  --edge-primary: #3d6493;
+  --edge-soft: #cbdcef;
+}
+:root[data-season='winter'][data-theme='dark'] {
+  --bg: #161b24;
+  --surface: #1f2530;
+  --surface-2: #262e3a;
+  --surface-3: #2e3745;
+  --line: #343e4d;
+  --text: #eaf0f8;
+  --text-soft: #c3cfdf;
+  --muted: #8e9cb0;
+  --lav-50: #1f2a3b;
+  --lav-100: #26344a;
+  --lav-200: #31445f;
+  --lav-400: #8fb6e6;
+  --lav-500: #6f9bd3;
+  --lav-600: #a9cbf4;
+  --lav-700: #c6ddfa;
+  --pink-50: #2a2640;
+  --pink-100: #353050;
+  --pink-300: #7d6fb0;
+  --pink-500: #b8a6ec;
+  --edge-primary: #2c4a73;
+  --edge-soft: #1f2a3b;
+}
+:root[data-season='christmas'] {
+  --bg: #f6f2ec;
+  --surface: #fffdf9;
+  --surface-2: #f2ede5;
+  --surface-3: #e9e2d8;
+  --line: #e6ded2;
+  --text: #3d3a35;
+  --text-soft: #665f56;
+  --muted: #8b8378;
+  --lav-50: #edf5f0;
+  --lav-100: #d9ebe0;
+  --lav-200: #b8d8c4;
+  --lav-400: #6fa486;
+  --lav-500: #4d8a68;
+  --lav-600: #3b7155;
+  --lav-700: #2d5a43;
+  --pink-50: #fcefef;
+  --pink-100: #f8dcdc;
+  --pink-300: #e9a2a2;
+  --pink-500: #c94f4f;
+  --edge-primary: #2e5c44;
+  --edge-soft: #c9dfd1;
+}
+:root[data-season='christmas'][data-theme='dark'] {
+  --bg: #141c18;
+  --surface: #1c2721;
+  --surface-2: #233029;
+  --surface-3: #2b3a31;
+  --line: #314238;
+  --text: #eef5ef;
+  --text-soft: #c7d6cb;
+  --muted: #92a698;
+  --lav-50: #1f3329;
+  --lav-100: #27402f;
+  --lav-200: #325240;
+  --lav-400: #7cc49c;
+  --lav-500: #5fae84;
+  --lav-600: #96dbb5;
+  --lav-700: #b6ecce;
+  --pink-50: #3a1f22;
+  --pink-100: #4a272b;
+  --pink-300: #a14d55;
+  --pink-500: #ec7a7a;
+  --edge-primary: #24513a;
+  --edge-soft: #1f3329;
+}
+:root[data-season='spring'] {
+  --bg: #f9f5f4;
+  --surface: #fffdfc;
+  --surface-2: #f8f0f1;
+  --surface-3: #f1e6e9;
+  --line: #f0e2e6;
+  --text: #4a3d44;
+  --text-soft: #73626b;
+  --muted: #978690;
+  --lav-50: #fdf0f4;
+  --lav-100: #fadfe8;
+  --lav-200: #f4c4d4;
+  --lav-400: #e58aa8;
+  --lav-500: #d96f94;
+  --lav-600: #bf5579;
+  --lav-700: #9f4262;
+  --pink-50: #eef8f2;
+  --pink-100: #d9f0e2;
+  --pink-300: #9fd6b4;
+  --pink-500: #5fb585;
+  --edge-primary: #a94a6c;
+  --edge-soft: #f0cdd9;
+}
+:root[data-season='spring'][data-theme='dark'] {
+  --bg: #1e191c;
+  --surface: #282126;
+  --surface-2: #30282e;
+  --surface-3: #3a3037;
+  --line: #42363e;
+  --text: #f8ecf1;
+  --text-soft: #dcc8d1;
+  --muted: #a8939d;
+  --lav-50: #3a2430;
+  --lav-100: #4a2d3d;
+  --lav-200: #5e384d;
+  --lav-400: #f0a0bc;
+  --lav-500: #e389a8;
+  --lav-600: #f7b7cd;
+  --lav-700: #fbcfde;
+  --pink-50: #1f3329;
+  --pink-100: #27402f;
+  --pink-300: #4f9a70;
+  --pink-500: #7ed3a2;
+  --edge-primary: #8f3d5b;
+  --edge-soft: #3a2430;
+}
+:root[data-season='summer'] {
+  --bg: #fbf6ee;
+  --surface: #fffdf8;
+  --surface-2: #f8f1e6;
+  --surface-3: #f1e7d8;
+  --line: #efe4d3;
+  --text: #3f4440;
+  --text-soft: #636b66;
+  --muted: #8a908b;
+  --lav-50: #eaf8f7;
+  --lav-100: #d2f0ee;
+  --lav-200: #a9e1dd;
+  --lav-400: #4fbcb4;
+  --lav-500: #2fa39b;
+  --lav-600: #23857e;
+  --lav-700: #1b6a64;
+  --pink-50: #fff3e8;
+  --pink-100: #ffe4cc;
+  --pink-300: #ffbe8a;
+  --pink-500: #f59a52;
+  --edge-primary: #1d6f69;
+  --edge-soft: #c5e9e6;
+}
+:root[data-season='summer'][data-theme='dark'] {
+  --bg: #14201f;
+  --surface: #1c2a29;
+  --surface-2: #233332;
+  --surface-3: #2a3d3c;
+  --line: #304544;
+  --text: #ecf7f5;
+  --text-soft: #c4dcd9;
+  --muted: #8fa9a6;
+  --lav-50: #1d3634;
+  --lav-100: #23423f;
+  --lav-200: #2d5552;
+  --lav-400: #6fd6cd;
+  --lav-500: #4fc2b8;
+  --lav-600: #8ee6de;
+  --lav-700: #b0f0ea;
+  --pink-50: #3b2a1c;
+  --pink-100: #4d3522;
+  --pink-300: #b8783f;
+  --pink-500: #ffb070;
+  --edge-primary: #1a5753;
+  --edge-soft: #1d3634;
+}
+:root[data-season='birthday'] {
+  --bg: #fbf7fb;
+  --surface: #fffdff;
+  --surface-2: #f8f1f8;
+  --surface-3: #f1e7f2;
+  --line: #efe3ef;
+  --text: #463b4c;
+  --text-soft: #6f6275;
+  --muted: #968a9b;
+  --lav-50: #f7eefc;
+  --lav-100: #eedcf8;
+  --lav-200: #e0c2f2;
+  --lav-400: #c58be6;
+  --lav-500: #b06fd9;
+  --lav-600: #9553c0;
+  --lav-700: #7a40a2;
+  --pink-50: #fff6e6;
+  --pink-100: #ffeac2;
+  --pink-300: #f8cf7d;
+  --pink-500: #eeb244;
+  --edge-primary: #7a3fa6;
+  --edge-soft: #e8d0f4;
+}
+:root[data-season='birthday'][data-theme='dark'] {
+  --bg: #1d1622;
+  --surface: #271e2e;
+  --surface-2: #302537;
+  --surface-3: #3a2d42;
+  --line: #43344c;
+  --text: #f9eefc;
+  --text-soft: #dbc8e3;
+  --muted: #a790b1;
+  --lav-50: #34223f;
+  --lav-100: #432c51;
+  --lav-200: #563868;
+  --lav-400: #d9a5f5;
+  --lav-500: #c68ae9;
+  --lav-600: #e2b9fa;
+  --lav-700: #ecd0fc;
+  --pink-50: #3b2f19;
+  --pink-100: #4d3d20;
+  --pink-300: #b58f3e;
+  --pink-500: #ffcf66;
+  --edge-primary: #6b358f;
+  --edge-soft: #34223f;
+}
+
+/* ===== Seasonal layers ===== */
+body {
+  isolation: isolate;
+}
+#season-fx {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+}
+.season-tree {
+  position: fixed;
+  right: -30px;
+  bottom: -10px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.92;
+}
+.season-tree:empty,
+.season-garland:empty {
+  display: none;
+}
+.season-garland {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 40px;
+  height: 34px;
+  overflow: hidden;
+  z-index: 25;
+  pointer-events: none;
+}
+.season-garland .bulb {
+  animation: bulb 1.8s ease-in-out infinite;
+}
+@keyframes bulb {
+  50% {
+    opacity: 0.35;
+  }
+}
+.season-fog {
+  position: fixed;
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  height: 160px;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 100%, rgba(200, 185, 220, 0.45), transparent 60%),
+    radial-gradient(ellipse at 70% 100%, rgba(200, 185, 220, 0.4), transparent 55%);
+  animation: fog 18s ease-in-out infinite alternate;
+}
+[data-theme='dark'] .season-fog {
+  background:
+    radial-gradient(ellipse at 20% 100%, rgba(150, 120, 190, 0.28), transparent 60%),
+    radial-gradient(ellipse at 70% 100%, rgba(150, 120, 190, 0.22), transparent 55%);
+}
+@keyframes fog {
+  to {
+    transform: translateX(6%);
+  }
+}
+.season-scene {
+  height: 92px;
+  margin: 4px 0 0;
+  flex-shrink: 0;
+}
+.season-scene:empty {
+  display: none;
+}
+.season-scene svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.season-scene .bulb,
+.season-scene .flame {
+  animation: bulb 1.6s ease-in-out infinite;
+}
+.season-scene .ghost {
+  animation: ghost 3s ease-in-out infinite;
+}
+.season-scene .flicker {
+  animation: bulb 0.9s ease-in-out infinite;
+}
+.season-scene .balloon-sway {
+  animation: ghost 4s ease-in-out infinite;
+}
+@keyframes ghost {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+/* Seasonal touches on cards and buttons */
+:root[data-season='halloween'] .card.stat::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 34px;
+  height: 34px;
+  opacity: 0.35;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34' fill='none' stroke='%23705a86' stroke-width='0.8'%3E%3Cpath d='M34 0 L4 30 M34 0 L14 33 M34 0 L1 18 M34 0 L22 34 M34 0 L0 8'/%3E%3Cpath d='M27 7 Q24 4 23 1 M29 13 Q23 9 18 3 M30 20 Q21 14 12 4 M31 27 Q18 19 7 6'/%3E%3C/svg%3E")
+    no-repeat top right;
+}
+:root[data-season='christmas'] .btn-primary,
+:root[data-season='winter'] .btn-primary {
+  position: relative;
+}
+:root[data-season='christmas'] .btn-primary::before,
+:root[data-season='winter'] .btn-primary::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: -4px;
+  height: 8px;
+  border-radius: 8px 8px 4px 4px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(80, 100, 130, 0.25);
+  pointer-events: none;
+}
+.card.stat {
+  position: relative;
+}
+.sound-switch {
+  width: 32px;
+  height: 30px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.sound-switch.on,
+.sound-switch:hover {
+  color: var(--lav-600);
+}
+.season-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.season-fx {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+/* ===== Birthday card ===== */
+.bday-card {
+  text-align: center;
+}
+.bday-hero {
+  font-size: 56px;
+  animation: ghost 2.4s ease-in-out infinite;
+}
+.bday-lead {
+  color: var(--text-soft);
+  margin-bottom: 12px;
+}
+.bday-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  margin-bottom: 16px;
+}
+.bday-line {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  opacity: 0;
+  transform: translateY(8px);
+  animation: bday-in 0.5s ease-out forwards;
+}
+.bday-face {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.bday-love {
+  justify-content: center;
+  text-align: center;
+  font-weight: 800;
+  font-size: 18px;
+  background: linear-gradient(120deg, var(--lav-100), var(--pink-100));
+  color: var(--lav-700);
+}
+@keyframes bday-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.head-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ===== Painting quiz ===== */
+.quiz-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.quiz-card {
+  max-width: 980px;
+}
+.quiz-question {
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+.quiz-who {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+.quiz-img {
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-2);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.quiz-img.big {
+  aspect-ratio: auto;
+  min-height: 260px;
+  max-height: 460px;
+  border: 6px solid #c9a46a;
+  box-shadow: inset 0 0 0 2px #8a6a3e;
+}
+.quiz-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.quiz-img.big img {
+  max-height: 440px;
+}
+.quiz-noimg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  padding: 12px;
+  text-align: center;
+  font-size: 13px;
+}
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.quiz-option {
+  justify-content: flex-start;
+  text-align: left;
+}
+.quiz-artist {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.quiz-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 16px;
+  border: 2px solid transparent;
+  background: var(--surface-2);
+  text-align: left;
+  transition: transform 0.15s;
+}
+.quiz-tile:hover {
+  transform: translateY(-2px);
+}
+.quiz-option.right,
+.quiz-tile.right {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+.quiz-option.wrong,
+.quiz-tile.wrong {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.quiz-option.dim,
+.quiz-tile.dim {
+  opacity: 0.55;
+}
+.quiz-result {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.quiz-verdict {
+  font-weight: 800;
+}
+.quiz-result.ok .quiz-verdict {
+  color: var(--success);
+}
+.quiz-result.miss .quiz-verdict {
+  color: var(--danger);
+}
+@media (max-width: 820px) {
+  .quiz-who {
+    grid-template-columns: 1fr;
+  }
+  .quiz-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .quiz-img.big {
+    min-height: 200px;
+  }
+  .season-garland {
+    top: calc(48px + env(safe-area-inset-top));
+  }
+  .season-tree {
+    transform: scale(0.6);
+    transform-origin: bottom right;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .season-garland .bulb,
+  .season-scene * {
+    animation: none !important;
+  }
+}
+
+/* Primary buttons follow the season's accent (the base theme hard-codes lavender gradients). */
+:root[data-season] .btn-primary {
+  background: linear-gradient(180deg, var(--lav-400), var(--lav-500));
+}
+:root[data-season] .btn-primary:hover {
+  background: linear-gradient(180deg, var(--lav-500), var(--lav-600));
+}
+:root[data-season][data-theme='dark'] .btn-primary {
+  background: linear-gradient(180deg, var(--lav-500), var(--edge-primary));
+}

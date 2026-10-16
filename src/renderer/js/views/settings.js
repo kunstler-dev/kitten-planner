@@ -4,7 +4,12 @@ import { t } from '../i18n.js';
 import { MODELS, resetKeyStatus, chatErrorText } from './chat.js';
 import { setKittenEnabled, setKittenSpeed } from '../kitten.js';
 import { setPetsEnabled } from '../pets.js';
-import { applyLang, applyTheme } from '../app-shell.js';
+import { applyLang, applyTheme, renderTopbar } from '../app-shell.js';
+import { syncStatus, onSyncStatus, syncNow, connectCloud, disconnectCloud, WEB_APP_URL } from '../sync/sync.js';
+import { relativeTime } from '../dates.js';
+import { SEASONS, SEASON_FX, SEASON_SOUND } from '../seasons/season.js';
+import { effectiveSeason, applySeason, syncSound } from '../seasons/index.js';
+import { showBirthday } from '../seasons/birthday.js';
 
 const BUSINESS_FIELDS = [
   ['company', 'set.company', 'set.companyPlaceholder'],
@@ -18,7 +23,155 @@ const BUSINESS_FIELDS = [
   ['bic', 'set.bic', ''],
 ];
 
-export async function renderSettings(root) {
+const isWeb = () => window.api.platform === 'web';
+const toggle = (checked, onchange, label) =>
+  h(
+    'label',
+    { class: 'toggle' },
+    h('input', { type: 'checkbox', checked, onchange }),
+    h('span', { class: 'toggle-track' }),
+    h('span', {}, label),
+  );
+let unsubscribeSync = null;
+
+/** "Sync with the phone" card; repaints itself on sync status changes (never the whole page). */
+function syncCard() {
+  const card = h('section', { class: 'card sync-card', id: 'sync' });
+  const busy = h('div', { class: 'small muted' });
+  const paint = () => {
+    const st = syncStatus();
+    const connected = !['off', 'unconfigured'].includes(st.state);
+    const when = st.lastSync ? relativeTime(st.lastSync) : '';
+    card.replaceChildren(
+      h('h2', {}, icon('phone', 18), t('sync.title')),
+      h('div', { class: 'muted small' }, t('sync.intro')),
+      st.state === 'unconfigured'
+        ? h('div', { class: 'sync-note' }, t('sync.unconfigured'))
+        : connected
+          ? h(
+              'div',
+              { class: 'sync-row' },
+              h('span', { class: `sync-dot s-${st.state}` }),
+              h(
+                'div',
+                { class: 'sync-text' },
+                h('b', {}, t(`sync.state.${st.state}`, { when })),
+                st.email ? h('div', { class: 'muted small' }, t('sync.account', { email: st.email })) : null,
+              ),
+              h(
+                'div',
+                { class: 'btn-row' },
+                h('button', { class: 'btn btn-soft', onclick: () => syncNow() }, icon('cloudSync', 16), t('sync.now')),
+                h(
+                  'button',
+                  {
+                    class: 'btn btn-ghost',
+                    onclick: async () => {
+                      if (await confirmDialog(t('sync.disconnectConfirm'), { okText: t('sync.disconnect') }))
+                        await disconnectCloud();
+                    },
+                  },
+                  t('sync.disconnect'),
+                ),
+              ),
+            )
+          : h(
+              'div',
+              { class: 'btn-row' },
+              h(
+                'button',
+                {
+                  class: 'btn btn-primary',
+                  onclick: async () => {
+                    busy.textContent = isWeb() ? '' : t('sync.connecting');
+                    const ok = await connectCloud();
+                    busy.textContent = '';
+                    toast(ok ? t('sync.connected') : t('sync.connectFailed'), ok ? 'success' : 'error');
+                  },
+                },
+                icon('cloud', 16),
+                t('sync.connect'),
+              ),
+            ),
+      busy,
+      h(
+        'div',
+        { class: 'muted small sync-hint' },
+        isWeb() ? t('sync.phoneHintWeb') : t('sync.phoneHint', { url: WEB_APP_URL }),
+      ),
+    );
+  };
+  paint();
+  unsubscribeSync?.();
+  unsubscribeSync = onSyncStatus(() => (card.isConnected ? paint() : unsubscribeSync?.()));
+  return card;
+}
+
+/** "Season & mood" card: season choice, per-effect switches, ambient sound. */
+function seasonCard() {
+  const card = h('section', { class: 'card season-card', id: 'season' });
+  const paint = () => {
+    const d = state.data.settings;
+    const choice = d.season || 'auto';
+    const current = effectiveSeason();
+    const setFx = (key, on) => {
+      update((x) => (x.settings.fx = { ...(x.settings.fx || {}), [key]: on }), { silent: true });
+      applySeason();
+    };
+    card.replaceChildren(
+      h('h2', {}, icon('sparkle', 18), t('season.title')),
+      field(
+        t('season.choose'),
+        h(
+          'select',
+          {
+            class: 'input',
+            id: 'season-select',
+            onchange: (e) => {
+              update((x) => (x.settings.season = e.target.value), { silent: true });
+              applySeason();
+              renderTopbar();
+              paint();
+            },
+          },
+          ['auto', ...SEASONS, 'none'].map((s) => h('option', { value: s, selected: s === choice }, t(`season.${s}`))),
+        ),
+      ),
+      choice === 'auto' && current
+        ? h('div', { class: 'muted small' }, t('season.now', { season: t(`season.${current}`) }))
+        : null,
+      current
+        ? h(
+            'div',
+            { class: 'season-fx' },
+            SEASON_FX[current].map((key) =>
+              toggle(
+                d.fx?.[key] !== false,
+                (e) => setFx(key, e.target.checked),
+                t(key === 'critters' ? `season.fx.critters.${current}` : `season.fx.${key}`),
+              ),
+            ),
+            toggle(
+              Boolean(d.sound),
+              (e) => {
+                update((x) => (x.settings.sound = e.target.checked), { silent: true });
+                syncSound();
+                renderTopbar();
+              },
+              t(`season.sound.${SEASON_SOUND[current]}`),
+            ),
+          )
+        : null,
+      current === 'birthday'
+        ? h('button', { class: 'btn btn-soft', onclick: () => showBirthday() }, `🎁 ${t('bday.open')}`)
+        : null,
+    );
+  };
+  paint();
+  return card;
+}
+
+export async function renderSettings(root, params = {}) {
   const d = state.data;
   const info = await window.api.appInfo();
   const key = await window.api.keyStatus();
@@ -40,15 +193,6 @@ export async function renderSettings(root) {
     { class: 'small muted' },
     key.hasKey ? (key.encrypted ? t('set.keyEncrypted') : t('set.keyLocal')) : t('set.keyNone'),
   );
-  const toggle = (checked, onchange, label) =>
-    h(
-      'label',
-      { class: 'toggle' },
-      h('input', { type: 'checkbox', checked, onchange }),
-      h('span', { class: 'toggle-track' }),
-      h('span', {}, label),
-    );
-
   const address = h('textarea', {
     class: 'input',
     rows: 3,
@@ -132,6 +276,7 @@ export async function renderSettings(root) {
         ),
         h('div', { class: 'muted small' }, t('set.kittenHint')),
       ),
+      seasonCard(),
       h(
         'section',
         { class: 'card span-2' },
@@ -216,21 +361,26 @@ export async function renderSettings(root) {
           ),
         ),
       ),
+      syncCard(),
       h(
         'section',
         { class: 'card' },
         h('h2', {}, t('set.data')),
-        h('div', { class: 'muted small' }, t('set.dataFolder')),
-        h('code', { class: 'path' }, info.dataDir),
+        isWeb()
+          ? h('div', { class: 'muted small' }, t('set.dataWeb'))
+          : h('div', { class: 'muted small' }, t('set.dataFolder')),
+        isWeb() ? null : h('code', { class: 'path' }, info.dataDir),
         h(
           'div',
           { class: 'btn-row' },
-          h(
-            'button',
-            { class: 'btn btn-soft', onclick: () => window.api.openDataFolder() },
-            icon('folder', 16),
-            t('set.openFolder'),
-          ),
+          isWeb()
+            ? null
+            : h(
+                'button',
+                { class: 'btn btn-soft', onclick: () => window.api.openDataFolder() },
+                icon('folder', 16),
+                t('set.openFolder'),
+              ),
           h(
             'button',
             {
@@ -280,4 +430,5 @@ export async function renderSettings(root) {
       ),
     ),
   );
+  if (params.section === 'sync') document.getElementById('sync')?.scrollIntoView({ block: 'center' });
 }

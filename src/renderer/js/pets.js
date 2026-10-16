@@ -4,6 +4,7 @@ import { h } from './ui.js';
 import { t } from './i18n.js';
 import { state } from './state.js';
 import { createPetCorner } from './pets3d.js';
+import { onSeasonChange } from './seasons/season.js';
 
 let el = null;
 let scene = null;
@@ -50,6 +51,7 @@ function buildScene() {
     zzz.style.left = `${a.x}px`;
     zzz.style.top = `${a.y - 14}px`;
     el.append(scene.el, zzz);
+    onSeasonChange((season) => scene.setOutfit(season));
     el.addEventListener('mouseenter', () => scene.setHover(true));
     el.addEventListener('mouseleave', () => scene.setHover(false));
     document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));

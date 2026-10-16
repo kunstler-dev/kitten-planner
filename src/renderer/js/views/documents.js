@@ -4,6 +4,16 @@ import { h, icon, modal, field, confirmDialog, toast, select, emptyState } from 
 import { state, update, uid } from '../state.js';
 import { t } from '../i18n.js';
 import { numericDate, todayKey, addDays, humanDate } from '../dates.js';
+import { ensureDocument } from '../sync/sync.js';
+
+/** Attachments added on the other device are downloaded from Google Drive on first open. */
+async function fetchFile(stored) {
+  if (await window.api.hasDocument(stored)) return true;
+  toast(t('docs.downloading'));
+  const ok = await ensureDocument(stored);
+  if (!ok) toast(t('docs.missingFile'), 'error');
+  return ok;
+}
 
 export const DOC_CATEGORIES = [
   'registration',
@@ -231,6 +241,7 @@ export function renderDocuments(root) {
                     class: 'chip chip-link',
                     title: t('docs.openFile'),
                     onclick: async () => {
+                      if (!(await fetchFile(f.stored))) return;
                       const err = await window.api.openDocument(f.stored);
                       if (err) toast(t('docs.openError'), 'error');
                     },
@@ -251,7 +262,7 @@ export function renderDocuments(root) {
               {
                 class: 'icon-btn',
                 title: t('docs.showInFolder'),
-                onclick: () => window.api.showDocument(d.files[0].stored),
+                onclick: async () => (await fetchFile(d.files[0].stored)) && window.api.showDocument(d.files[0].stored),
               },
               icon('folder', 16),
             )

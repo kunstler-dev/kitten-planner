@@ -48,6 +48,26 @@ The build is not code-signed, so Windows SmartScreen asks once (_More info → R
 
 Data lives in `%APPDATA%\Kitten Planner` (`data.json` + `data.backup.json`, `documents/`, `secret.bin`).
 
+## Phone & sync
+
+The same app runs on the phone as an installable web app:
+**https://kunstler-dev.github.io/kitten-planner/** — on an iPhone open it in Safari and choose
+_Share → Add to Home Screen_. It starts like a native app, works offline and keeps its data on the phone.
+
+Computer and phone share their data through the user's **own Google Drive** (Settings → Sync):
+
+- Only the `drive.appdata` scope is requested — a hidden folder that belongs to the app; nothing else in
+  Drive is visible to it. There is no server in between.
+- Sync is a **three-way merge** against the last synced snapshot, per record and per field, so edits
+  made offline on both devices are combined instead of overwriting each other (an edit beats a deletion).
+- Theme, language and the kitten settings stay per device; the OpenAI key is never synced.
+- Document attachments are uploaded too and downloaded on the other device when first opened.
+- Desktop: OAuth for installed apps (system browser, loopback redirect, PKCE), refresh token encrypted
+  with `safeStorage`. Phone: implicit-flow redirect (popups are unreliable in iOS home-screen apps); the
+  hour-long token is renewed with a silent redirect on the next launch.
+
+Setting it up needs a Google Cloud OAuth client — see [docs/google-sync.md](docs/google-sync.md).
+
 ## Tech stack
 
 - **Electron** (sandboxed renderer, context isolation, strict CSP, single preload bridge)
@@ -55,7 +75,7 @@ Data lives in `%APPDATA%\Kitten Planner` (`data.json` + `data.backup.json`, `doc
 - **three.js** for the kitten, **marked** + **DOMPurify** for chat markdown, **Nunito** font bundled
 - **electron-builder** → single portable `.exe`
 - Tests: **node:test** (store, OpenAI streaming, price calculation, i18n completeness) and
-  **Playwright** driving the real Electron app end-to-end (with screenshots)
+  **Playwright** driving the real Electron app and the phone build (iPhone viewport, faked Google Drive) end-to-end
 - **GitHub Actions**: lint + format + unit + e2e on Linux, `.exe` build on `windows-latest`, release on `v*` tags
 
 ## Project structure
@@ -76,7 +96,10 @@ src/renderer/
   js/kitten.js       kitten behaviour;  kitten3d.js (three.js), kitten-svg.js (fallback)
   js/robot3d.js      Auerilus;  playground.js  kitten + robot game;  gpt-host.js  ChatGPT webview
   js/data/art/       painting-of-the-day entries (uk + de), schedule and pinned dates
+  js/sync/           Google Drive client, three-way merge, sync engine (shared by desktop and phone)
+  js/platform/       browser implementation of window.api for the phone (IndexedDB, OAuth redirect)
 scripts/fetch-art.js resolves painting images via the Wikipedia API and bundles them
+scripts/build-web.js builds the phone version into site/ (manifest, service worker) for GitHub Pages
   js/views/          one module per section
 test/unit, test/e2e  node:test and Playwright suites
 ```

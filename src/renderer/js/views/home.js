@@ -7,6 +7,8 @@ import { progress, nextSteps } from '../launch-model.js';
 import { monthTotals } from './finance.js';
 import { navigate } from '../router.js';
 import { openArt } from './art.js';
+import { effectiveSeason } from '../seasons/index.js';
+import { showBirthday } from '../seasons/birthday.js';
 
 const IDEA_COUNT = 10;
 
@@ -110,7 +112,14 @@ export function renderHome(root) {
       'div',
       { class: 'page-head' },
       h('div', {}, h('h1', { id: 'greeting' }, greetText(name)), h('div', { class: 'muted' }, longDate(today))),
-      h('button', { class: 'btn btn-soft', onclick: () => openArt(today) }, `🎨 ${t('art.ofTheDay')}`),
+      h(
+        'div',
+        { class: 'head-actions' },
+        effectiveSeason() === 'birthday'
+          ? h('button', { class: 'btn btn-primary bday-btn', onclick: () => showBirthday() }, `🎁 ${t('bday.open')}`)
+          : null,
+        h('button', { class: 'btn btn-soft', onclick: () => openArt(today) }, `🎨 ${t('art.ofTheDay')}`),
+      ),
     ),
     h(
       'div',

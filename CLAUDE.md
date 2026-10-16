@@ -56,7 +56,7 @@ bookbinding workshop + souvenir shop in Coburg (Bavaria, Germany).
 - `xvfb-run -a npx playwright test` — e2e on the real app; `SCREENSHOT_DIR=/dir` saves screenshots — **look at them
   after UI changes** (both languages, both themes).
 - `npm run icons` — regenerate icons from `build/icon.svg`.
-- Windows `.exe`: GitHub Actions `windows-latest` (artifact `KittenPlanner-windows`; tag `v*` → GitHub Release).
+- Windows `.exe`: GitHub Actions `windows-latest` (artifact `KittenPlanner-windows`; tag `v*` or a manual run with `release: true` → GitHub Release `v<package.json version>`).
   Local Linux sanity build without wine: `npx electron-builder --win portable --x64 -c.win.signAndEditExecutable=false`.
 
 ## Conventions

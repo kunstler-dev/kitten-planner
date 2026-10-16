@@ -1,7 +1,9 @@
-// Birthday greeting (3 November): every pet says something, then the most important line.
+// Birthday greeting: every pet says something, then the most important line. The date, title and
+// closing line come from personal.js (injected from a repository secret at build time).
 // Shown automatically once per year on the day; can be reopened from the home page.
 import { h, modal } from '../ui.js';
-import { t } from '../i18n.js';
+import { t, tx } from '../i18n.js';
+import { PERSONAL } from '../personal.js';
 import { state, update } from '../state.js';
 import { seasonForDate } from './season.js';
 import { todayKey } from '../dates.js';
@@ -16,7 +18,7 @@ const VOICES = [
 
 export function showBirthday() {
   return modal({
-    title: t('bday.title'),
+    title: PERSONAL.title ? tx(PERSONAL.title) : t('bday.title'),
     width: 560,
     build: (close) =>
       h(
@@ -35,11 +37,13 @@ export function showBirthday() {
               h('div', {}, h('b', {}, t(`bday.name.${v.who}`)), h('div', {}, t(`bday.msg.${v.who}`))),
             ),
           ),
-          h(
-            'div',
-            { class: 'bday-line bday-love', style: { animationDelay: `${0.4 + VOICES.length * 0.7 + 0.4}s` } },
-            h('div', {}, t('bday.love')),
-          ),
+          PERSONAL.love
+            ? h(
+                'div',
+                { class: 'bday-line bday-love', style: { animationDelay: `${0.4 + VOICES.length * 0.7 + 0.4}s` } },
+                h('div', {}, tx(PERSONAL.love)),
+              )
+            : null,
         ),
         h(
           'div',

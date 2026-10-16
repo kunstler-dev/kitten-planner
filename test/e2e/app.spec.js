@@ -206,7 +206,8 @@ test('seasons, birthday greeting and painting quiz', async () => {
   await expect(page.locator('.season-garland svg')).toHaveCount(1);
   await page.selectOption('#season-select', 'birthday');
   await page.click('#season button:has-text("🎁")');
-  await expect(page.locator('.bday-line')).toHaveCount(6);
+  // Five pets; the closing line only exists when personal.js is filled from the secret.
+  await expect(page.locator('.bday-line')).toHaveCount(5);
   await page.waitForTimeout(5000);
   await snap(page, '13-birthday');
   await page.keyboard.press('Escape');

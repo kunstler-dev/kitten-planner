@@ -1,17 +1,19 @@
 import { h, icon, modal, field, confirmDialog, colorPicker, emptyState, toast } from '../ui.js';
 import { state, update, uid } from '../state.js';
 import { todayKey, humanDate } from '../dates.js';
+import { t } from '../i18n.js';
 import { taskRow, sortTasks, planProgress, progressBar, planById, PRIORITIES } from './common.js';
 
 let filter = 'active'; // active | today | upcoming | nodate | done | plan:<id>
 
 const FILTERS = [
-  { id: 'active', label: 'Все активные', icon: 'tasks' },
-  { id: 'today', label: 'Сегодня', icon: 'sparkle' },
-  { id: 'upcoming', label: 'Предстоящие', icon: 'calendar' },
-  { id: 'nodate', label: 'Без срока', icon: 'clock' },
-  { id: 'done', label: 'Выполненные', icon: 'check' },
+  { id: 'active', icon: 'tasks' },
+  { id: 'today', icon: 'sparkle' },
+  { id: 'upcoming', icon: 'calendar' },
+  { id: 'nodate', icon: 'clock' },
+  { id: 'done', icon: 'check' },
 ];
+const filterLabel = (id) => t(`tasks.filter.${id}`);
 
 function filtered() {
   const today = todayKey();
@@ -50,23 +52,23 @@ export function editTask(task) {
         planId: filter.startsWith('plan:') ? filter.slice(5) : null,
       };
   return modal({
-    title: task ? 'Изменить задачу' : 'Новая задача',
+    title: task ? t('tasks.edit') : t('tasks.new'),
     build: (close) => {
-      const title = h('input', { class: 'input', value: draft.title, placeholder: 'Что нужно сделать?' });
-      const notes = h('textarea', { class: 'input', rows: 3, placeholder: 'Детали (необязательно)' });
+      const title = h('input', { class: 'input', value: draft.title, placeholder: t('tasks.whatToDo') });
+      const notes = h('textarea', { class: 'input', rows: 3, placeholder: t('tasks.details') });
       notes.value = draft.notes || '';
       const due = h('input', { class: 'input', type: 'date', value: draft.due || '' });
       const prio = h(
         'select',
         { class: 'input' },
         Object.entries(PRIORITIES).map(([id, p]) =>
-          h('option', { value: id, selected: id === draft.priority }, p.label),
+          h('option', { value: id, selected: id === draft.priority }, p.label()),
         ),
       );
       const plan = h(
         'select',
         { class: 'input' },
-        h('option', { value: '' }, '— без плана —'),
+        h('option', { value: '' }, t('tasks.noPlan')),
         state.data.plans.map((p) => h('option', { value: p.id, selected: p.id === draft.planId }, p.title)),
       );
       const save = () => {
@@ -92,15 +94,15 @@ export function editTask(task) {
       return h(
         'div',
         { class: 'modal-body' },
-        field('Задача', title),
-        field('Описание', notes),
-        h('div', { class: 'field-row' }, field('Срок', due), field('Приоритет', prio)),
-        field('План', plan),
+        field(t('tasks.task'), title),
+        field(t('common.description'), notes),
+        h('div', { class: 'field-row' }, field(t('tasks.due'), due), field(t('tasks.priority'), prio)),
+        field(t('tasks.plan'), plan),
         h(
           'div',
           { class: 'modal-actions' },
-          h('button', { class: 'btn btn-ghost', onclick: () => close(false) }, 'Отмена'),
-          h('button', { class: 'btn btn-primary', onclick: save }, task ? 'Сохранить' : 'Добавить'),
+          h('button', { class: 'btn btn-ghost', onclick: () => close(false) }, t('common.cancel')),
+          h('button', { class: 'btn btn-primary', onclick: save }, task ? t('common.save') : t('common.add')),
         ),
       );
     },
@@ -108,23 +110,23 @@ export function editTask(task) {
 }
 
 async function deleteTask(task) {
-  if (await confirmDialog(`Удалить задачу «${task.title}»?`)) {
+  if (await confirmDialog(t('tasks.delete', { title: task.title }))) {
     update((d) => (d.tasks = d.tasks.filter((t) => t.id !== task.id)));
-    toast('Задача удалена');
+    toast(t('common.deleted'));
   }
 }
 
 function editPlan(plan) {
   const draft = plan ? { ...plan } : { title: '', description: '', deadline: '', color: 'lavender' };
   return modal({
-    title: plan ? 'Изменить план' : 'Новый план',
+    title: plan ? t('plans.edit') : t('plans.new'),
     build: (close) => {
       const title = h('input', {
         class: 'input',
         value: draft.title,
-        placeholder: 'Например, «Запуск онлайн-магазина»',
+        placeholder: t('plans.titlePlaceholder'),
       });
-      const desc = h('textarea', { class: 'input', rows: 3, placeholder: 'Цель и зачем это нужно' });
+      const desc = h('textarea', { class: 'input', rows: 3, placeholder: t('plans.descPlaceholder') });
       desc.value = draft.description || '';
       const deadline = h('input', { class: 'input', type: 'date', value: draft.deadline || '' });
       let color = draft.color;
@@ -156,18 +158,18 @@ function editPlan(plan) {
       return h(
         'div',
         { class: 'modal-body' },
-        field('Название', title),
-        field('Описание', desc),
-        field('Дедлайн', deadline),
+        field(t('common.title'), title),
+        field(t('common.description'), desc),
+        field(t('plans.deadline'), deadline),
         field(
-          'Цвет',
+          t('common.color'),
           colorPicker(color, (c) => (color = c)),
         ),
         h(
           'div',
           { class: 'modal-actions' },
-          h('button', { class: 'btn btn-ghost', onclick: () => close(false) }, 'Отмена'),
-          h('button', { class: 'btn btn-primary', onclick: save }, plan ? 'Сохранить' : 'Создать план'),
+          h('button', { class: 'btn btn-ghost', onclick: () => close(false) }, t('common.cancel')),
+          h('button', { class: 'btn btn-primary', onclick: save }, plan ? t('common.save') : t('plans.create')),
         ),
       );
     },
@@ -177,7 +179,7 @@ function editPlan(plan) {
 async function deletePlan(plan) {
   const n = state.data.tasks.filter((t) => t.planId === plan.id).length;
   const ok = await confirmDialog(
-    `Удалить план «${plan.title}»?${n ? ` Его задачи (${n}) останутся, но без плана.` : ''}`,
+    t('plans.delete', { title: plan.title }) + (n ? ` ${t('plans.deleteKeep', { n })}` : ''),
   );
   if (!ok) return;
   filter = 'active';
@@ -208,7 +210,7 @@ export function renderTasks(root, params = {}) {
             onclick: () => ((filter = f.id), renderTasks(root)),
           },
           icon(f.icon, 16),
-          h('span', {}, f.label),
+          h('span', {}, filterLabel(f.id)),
           h('span', { class: 'count' }, count(f.id)),
         ),
       ),
@@ -216,8 +218,8 @@ export function renderTasks(root, params = {}) {
     h(
       'div',
       { class: 'side-title' },
-      h('span', {}, 'Планы'),
-      h('button', { class: 'icon-btn small', title: 'Новый план', onclick: () => editPlan() }, icon('plus', 16)),
+      h('span', {}, t('nav.plans')),
+      h('button', { class: 'icon-btn small', title: t('plans.new'), onclick: () => editPlan() }, icon('plus', 16)),
     ),
     h(
       'div',
@@ -236,14 +238,14 @@ export function renderTasks(root, params = {}) {
               h('span', { class: 'count' }, `${pr.pct}%`),
             );
           })
-        : h('div', { class: 'muted small pad' }, 'Планы помогают разбить большую цель на шаги.'),
+        : h('div', { class: 'muted small pad' }, t('plans.hint')),
     ),
   );
 
   const today = todayKey();
   const quick = h('input', {
     class: 'input',
-    placeholder: plan ? `Новый шаг для «${plan.title}»… (Enter)` : 'Добавить задачу… (Enter)',
+    placeholder: plan ? t('tasks.quickPlan', { title: plan.title }) : t('tasks.quick'),
     onkeydown: (e) => {
       if (e.key !== 'Enter' || !e.target.value.trim()) return;
       const title = e.target.value.trim();
@@ -265,7 +267,7 @@ export function renderTasks(root, params = {}) {
   });
 
   const list = sortTasks(filtered());
-  const headTitle = plan ? plan.title : FILTERS.find((f) => f.id === filter)?.label;
+  const headTitle = plan ? plan.title : filterLabel(filter);
   let planHeader = null;
   if (plan) {
     const pr = planProgress(plan.id);
@@ -278,23 +280,32 @@ export function renderTasks(root, params = {}) {
         h(
           'div',
           {},
-          plan.description ? h('div', {}, plan.description) : h('div', { class: 'muted' }, 'Без описания'),
+          plan.description ? h('div', {}, plan.description) : h('div', { class: 'muted' }, t('plans.noDesc')),
           plan.deadline
-            ? h('div', { class: 'muted small' }, icon('target', 13), ` Дедлайн: ${humanDate(plan.deadline)}`)
+            ? h(
+                'div',
+                { class: 'muted small' },
+                icon('target', 13),
+                ` ${t('plans.deadline')}: ${humanDate(plan.deadline)}`,
+              )
             : null,
         ),
         h(
           'div',
           { class: 'row-actions visible' },
-          h('button', { class: 'icon-btn', title: 'Изменить план', onclick: () => editPlan(plan) }, icon('edit', 16)),
-          h('button', { class: 'icon-btn', title: 'Удалить план', onclick: () => deletePlan(plan) }, icon('trash', 16)),
+          h('button', { class: 'icon-btn', title: t('plans.edit'), onclick: () => editPlan(plan) }, icon('edit', 16)),
+          h(
+            'button',
+            { class: 'icon-btn', title: t('common.delete'), onclick: () => deletePlan(plan) },
+            icon('trash', 16),
+          ),
         ),
       ),
       h(
         'div',
         { class: 'plan-progress-row' },
         progressBar(pr.pct, plan.color),
-        h('span', { class: 'small' }, `${pr.done} из ${pr.total} · ${pr.pct}%`),
+        h('span', { class: 'small' }, t('plans.progress', { done: pr.done, total: pr.total, pct: pr.pct })),
       ),
     );
   }
@@ -303,12 +314,12 @@ export function renderTasks(root, params = {}) {
     h(
       'div',
       { class: 'page-head' },
-      h('div', {}, h('h1', {}, 'Планы и задачи'), h('div', { class: 'muted' }, 'Большие цели — маленькими шагами')),
+      h('div', {}, h('h1', {}, t('nav.plans')), h('div', { class: 'muted' }, t('plans.subtitle'))),
       h(
         'div',
         { class: 'head-actions' },
-        h('button', { class: 'btn btn-soft', onclick: () => editPlan() }, icon('target', 16), 'Новый план'),
-        h('button', { class: 'btn btn-primary', onclick: () => editTask() }, icon('plus', 16), 'Задача'),
+        h('button', { class: 'btn btn-soft', onclick: () => editPlan() }, icon('target', 16), t('plans.new')),
+        h('button', { class: 'btn btn-primary', onclick: () => editTask() }, icon('plus', 16), t('tasks.task')),
       ),
     ),
     h(
@@ -327,8 +338,8 @@ export function renderTasks(root, params = {}) {
           list.length
             ? list.map((t) => taskRow(t, { onEdit: editTask, onDelete: deleteTask, showPlan: !plan }))
             : emptyState(
-                filter === 'done' ? 'Пока ничего не выполнено' : 'Задач нет',
-                filter === 'done' ? 'Отмечай задачи — они появятся здесь.' : 'Добавь первую задачу выше.',
+                filter === 'done' ? t('tasks.noneDone') : t('tasks.none'),
+                filter === 'done' ? t('tasks.noneDoneHint') : t('tasks.noneHint'),
               ),
         ),
       ),

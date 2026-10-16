@@ -1,7 +1,21 @@
-import { h, icon, toast, confirmDialog, field } from '../ui.js';
+import { h, icon, toast, confirmDialog, field, segmented } from '../ui.js';
 import { state, update, replaceData, flushSave } from '../state.js';
-import { MODELS, resetKeyStatus } from './chat.js';
+import { t } from '../i18n.js';
+import { MODELS, resetKeyStatus, chatErrorText } from './chat.js';
 import { setKittenEnabled, setKittenSpeed } from '../kitten.js';
+import { applyLang, applyTheme } from '../app-shell.js';
+
+const BUSINESS_FIELDS = [
+  ['company', 'set.company', 'set.companyPlaceholder'],
+  ['owner', 'set.owner', ''],
+  ['email', 'set.email', ''],
+  ['phone', 'set.phone', ''],
+  ['taxNumber', 'set.taxNumber', '123/456/78901'],
+  ['vatId', 'set.vatId', 'DE…'],
+  ['bank', 'set.bank', ''],
+  ['iban', 'set.iban', 'DE00 0000 …'],
+  ['bic', 'set.bic', ''],
+];
 
 export async function renderSettings(root) {
   const d = state.data;
@@ -11,26 +25,20 @@ export async function renderSettings(root) {
   const name = h('input', {
     class: 'input',
     value: d.profile.name || '',
-    placeholder: 'Как к тебе обращаться?',
+    placeholder: t('set.namePlaceholder'),
     oninput: (e) => update((x) => (x.profile.name = e.target.value), { silent: true }),
   });
-
   const keyInput = h('input', {
     class: 'input',
     type: 'password',
-    placeholder: key.hasKey ? `Сохранён: ${key.masked}` : 'sk-…',
+    placeholder: key.hasKey ? t('set.keySaved', { key: key.masked }) : 'sk-…',
     autocomplete: 'off',
   });
   const keyMsg = h(
     'div',
     { class: 'small muted' },
-    key.hasKey
-      ? key.encrypted
-        ? 'Ключ хранится зашифрованным средствами Windows.'
-        : 'Ключ сохранён локально.'
-      : 'Ключ не задан.',
+    key.hasKey ? (key.encrypted ? t('set.keyEncrypted') : t('set.keyLocal')) : t('set.keyNone'),
   );
-
   const toggle = (checked, onchange, label) =>
     h(
       'label',
@@ -40,30 +48,65 @@ export async function renderSettings(root) {
       h('span', {}, label),
     );
 
+  const address = h('textarea', {
+    class: 'input',
+    rows: 3,
+    placeholder: t('set.addressPlaceholder'),
+    oninput: (e) => update((x) => (x.business.address = e.target.value), { silent: true }),
+  });
+  address.value = d.business.address || '';
+
   root.replaceChildren(
     h(
       'div',
       { class: 'page-head' },
-      h('div', {}, h('h1', {}, 'Настройки'), h('div', { class: 'muted' }, 'Всё хранится только на этом компьютере')),
+      h('div', {}, h('h1', {}, t('nav.settings')), h('div', { class: 'muted' }, t('set.subtitle'))),
     ),
     h(
       'div',
       { class: 'settings-grid' },
-      h('section', { class: 'card' }, h('h2', {}, 'Профиль'), field('Имя', name)),
       h(
         'section',
         { class: 'card' },
-        h('h2', {}, 'Котёнок'),
+        h('h2', {}, t('set.profile')),
+        field(t('set.name'), name),
+        field(
+          t('set.language'),
+          segmented(
+            [
+              { value: 'uk', label: 'Українська' },
+              { value: 'de', label: 'Deutsch' },
+            ],
+            d.settings.lang,
+            (v) => applyLang(v),
+          ),
+        ),
+        field(
+          t('set.theme'),
+          segmented(
+            [
+              { value: 'light', label: t('set.themeLight') },
+              { value: 'dark', label: t('set.themeDark') },
+            ],
+            d.settings.theme,
+            (v) => applyTheme(v),
+          ),
+        ),
+      ),
+      h(
+        'section',
+        { class: 'card' },
+        h('h2', {}, t('set.kitten')),
         toggle(
           d.settings.kitten,
           (e) => {
             update((x) => (x.settings.kitten = e.target.checked), { silent: true });
             setKittenEnabled(e.target.checked);
           },
-          'Показывать котёнка',
+          t('set.kittenShow'),
         ),
         field(
-          'Скорость',
+          t('set.kittenSpeed'),
           h('input', {
             type: 'range',
             min: 0.5,
@@ -78,13 +121,41 @@ export async function renderSettings(root) {
             },
           }),
         ),
-        h('div', { class: 'muted small' }, 'Подержи курсор над котёнком — он замурлычет.'),
+        h('div', { class: 'muted small' }, t('set.kittenHint')),
+      ),
+      h(
+        'section',
+        { class: 'card span-2' },
+        h('h2', {}, t('set.business')),
+        h('div', { class: 'muted small' }, t('set.businessHint')),
+        h(
+          'div',
+          { class: 'biz-grid' },
+          BUSINESS_FIELDS.map(([k, label, ph]) =>
+            field(
+              t(label),
+              h('input', {
+                class: 'input',
+                value: d.business[k] || '',
+                placeholder: ph.startsWith('set.') ? t(ph) : ph,
+                oninput: (e) => update((x) => (x.business[k] = e.target.value), { silent: true }),
+              }),
+            ),
+          ),
+          field(t('set.address'), address),
+        ),
+        toggle(
+          d.business.kleinunternehmer,
+          (e) => update((x) => (x.business.kleinunternehmer = e.target.checked), { silent: true }),
+          t('set.ku'),
+        ),
+        h('div', { class: 'muted small' }, t('set.kuHint')),
       ),
       h(
         'section',
         { class: 'card' },
         h('h2', {}, 'ChatGPT'),
-        field('API-ключ OpenAI', keyInput),
+        field(t('set.apiKey'), keyInput),
         keyMsg,
         h(
           'div',
@@ -96,19 +167,19 @@ export async function renderSettings(root) {
               onclick: async () => {
                 const v = keyInput.value.trim();
                 if (!v) return keyInput.focus();
-                keyMsg.textContent = 'Проверяю…';
+                keyMsg.textContent = t('chat.checkingKey');
                 const res = await window.api.testKey(v);
                 if (!res.ok) {
-                  keyMsg.textContent = res.error;
+                  keyMsg.textContent = chatErrorText(res.code, res.detail);
                   return;
                 }
                 await window.api.setKey(v);
                 resetKeyStatus();
-                toast('Ключ сохранён', 'success');
+                toast(t('chat.keySaved'), 'success');
                 renderSettings(root);
               },
             },
-            'Сохранить ключ',
+            t('set.saveKey'),
           ),
           key.hasKey
             ? h(
@@ -116,19 +187,19 @@ export async function renderSettings(root) {
                 {
                   class: 'btn btn-ghost danger-text',
                   onclick: async () => {
-                    if (await confirmDialog('Удалить сохранённый API-ключ?')) {
+                    if (await confirmDialog(t('set.deleteKeyConfirm'))) {
                       await window.api.setKey('');
                       resetKeyStatus();
                       renderSettings(root);
                     }
                   },
                 },
-                'Удалить ключ',
+                t('set.deleteKey'),
               )
             : null,
         ),
         field(
-          'Модель по умолчанию',
+          t('set.model'),
           h(
             'select',
             { class: 'input', onchange: (e) => update((x) => (x.settings.model = e.target.value), { silent: true }) },
@@ -139,8 +210,8 @@ export async function renderSettings(root) {
       h(
         'section',
         { class: 'card' },
-        h('h2', {}, 'Данные'),
-        h('div', { class: 'muted small' }, 'Папка с данными:'),
+        h('h2', {}, t('set.data')),
+        h('div', { class: 'muted small' }, t('set.dataFolder')),
         h('code', { class: 'path' }, info.dataDir),
         h(
           'div',
@@ -149,7 +220,7 @@ export async function renderSettings(root) {
             'button',
             { class: 'btn btn-soft', onclick: () => window.api.openDataFolder() },
             icon('folder', 16),
-            'Открыть папку',
+            t('set.openFolder'),
           ),
           h(
             'button',
@@ -157,45 +228,46 @@ export async function renderSettings(root) {
               class: 'btn btn-soft',
               onclick: async () => {
                 await flushSave();
-                if (await window.api.exportData(state.data)) toast('Резервная копия сохранена', 'success');
+                if (await window.api.exportData({ data: state.data, title: t('set.export') }))
+                  toast(t('set.exported'), 'success');
               },
             },
             icon('download', 16),
-            'Экспорт',
+            t('set.export'),
           ),
           h(
             'button',
             {
               class: 'btn btn-soft',
               onclick: async () => {
-                if (
-                  !(await confirmDialog('Импорт заменит все текущие данные данными из файла. Продолжить?', {
-                    okText: 'Импортировать',
-                  }))
-                )
-                  return;
+                if (!(await confirmDialog(t('set.importConfirm'), { okText: t('set.import') }))) return;
                 try {
-                  const data = await window.api.importData();
+                  const data = await window.api.importData({ title: t('set.import') });
                   if (data) {
                     replaceData(data);
-                    toast('Данные восстановлены', 'success');
+                    toast(t('set.imported'), 'success');
                   }
                 } catch {
-                  toast('Не удалось прочитать файл', 'error');
+                  toast(t('set.importError'), 'error');
                 }
               },
             },
             icon('upload', 16),
-            'Импорт',
+            t('set.import'),
           ),
         ),
-        h('div', { class: 'muted small' }, 'API-ключ не попадает в резервную копию.'),
+        h('div', { class: 'muted small' }, t('set.backupHint')),
       ),
       h(
         'section',
         { class: 'card about' },
         icon('paw', 22),
-        h('div', {}, h('b', {}, 'Kitten Planner'), h('div', { class: 'muted small' }, `Версия ${info.version}`)),
+        h(
+          'div',
+          {},
+          h('b', {}, 'Kitten Planner'),
+          h('div', { class: 'muted small' }, t('set.version', { v: info.version })),
+        ),
       ),
     ),
   );

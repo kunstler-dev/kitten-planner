@@ -17,9 +17,9 @@ test('save + load roundtrip and backup', () => {
   const dir = tmp();
   const store = new Store(dir);
   const data = defaultData();
-  data.notes.push({ id: 'a', title: 'Привет', body: 'мир' });
+  data.notes.push({ id: 'a', title: 'Hallo', body: 'Welt' });
   store.save(data);
-  data.notes.push({ id: 'b', title: 'Второй', body: '' });
+  data.notes.push({ id: 'b', title: 'Zweite', body: '' });
   store.save(data);
   assert.equal(store.load().notes.length, 2);
   assert.ok(fs.existsSync(path.join(dir, 'data.backup.json')));

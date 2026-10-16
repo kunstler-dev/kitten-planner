@@ -1,12 +1,14 @@
 import { h, icon, toast, confirmDialog, emptyState } from '../ui.js';
 import { state, update, uid } from '../state.js';
-import { todayKey, humanDate } from '../dates.js';
+import { todayKey } from '../dates.js';
+import { t, tx, money } from '../i18n.js';
 import { planProgress } from './common.js';
 import { createNote } from './notes.js';
 import { route } from '../router.js';
+import { progress, nextSteps } from '../launch-model.js';
 
 export const MODELS = [
-  { id: 'gpt-4o-mini', label: 'GPT-4o mini — быстро и недорого' },
+  { id: 'gpt-4o-mini', label: 'GPT-4o mini' },
   { id: 'gpt-4o', label: 'GPT-4o' },
   { id: 'gpt-4.1-mini', label: 'GPT-4.1 mini' },
   { id: 'gpt-4.1', label: 'GPT-4.1' },
@@ -14,47 +16,57 @@ export const MODELS = [
   { id: 'gpt-5', label: 'GPT-5' },
 ];
 
-const SUGGESTIONS = [
-  'Помоги составить простой бизнес-план для моей идеи',
-  'Разбей мою главную цель на конкретные шаги на месяц',
-  'Предложи 10 идей для продвижения в соцсетях',
-  'Как посчитать цену на мои услуги?',
-  'Придумай несколько вариантов названия для бренда',
-];
+const SUGGESTION_COUNT = 5;
 
 let activeChatId = null;
 let keyStatus = null;
 let streaming = null; // { reqId, chatId, text }
 let rootRef = null;
 
+export function chatErrorText(code, detail) {
+  const base = t(`chat.err.${code}`);
+  return detail && code !== 'bad_key' ? `${base} (${detail})` : base;
+}
+
 function systemPrompt() {
   const d = state.data;
-  let text =
-    'Ты — тёплый, внимательный и практичный помощник девушки, которая начинает своё дело. ' +
-    'Помогаешь с планами, идеями, маркетингом, финансами и мотивацией. Отвечай по-русски, ' +
-    'структурированно и по делу: короткие абзацы, списки, конкретные шаги. ' +
-    'Поддерживай, но не льсти; если видишь риски — мягко скажи о них.';
-  if (d.profile.name) text += `\nЕё зовут ${d.profile.name}.`;
-  text += `\nСегодня ${humanDate(todayKey(), { withWeekday: true })} (${todayKey()}).`;
+  let text = t('chat.system');
+  if (d.profile.name) text += `\n${t('chat.sysName', { name: d.profile.name })}`;
+  text += `\n${t('chat.sysToday', { date: todayKey() })}`;
   if (!d.settings.chatUsesContext) return text;
+
+  const lines = [];
+  for (const kind of ['legal', 'commercial']) {
+    const pr = progress(kind);
+    lines.push(
+      `${t(`nav.${kind}`)}: ${pr.done}/${pr.total}. ${t('launch.next')}: ${nextSteps(kind, 3)
+        .map((s) => (s.custom ? s.title : tx(s.title)))
+        .join('; ')}`,
+    );
+  }
+  text += `\n\n${t('chat.sysLaunch')}\n${lines.join('\n')}`;
 
   const plans = d.plans.map((p) => {
     const pr = planProgress(p.id);
-    return `- ${p.title}${p.deadline ? ` (дедлайн ${p.deadline})` : ''}: ${pr.done}/${pr.total} задач выполнено${p.description ? `. ${p.description}` : ''}`;
+    return `- ${p.title}${p.deadline ? ` (${p.deadline})` : ''}: ${pr.done}/${pr.total}`;
   });
   const tasks = d.tasks
-    .filter((t) => !t.done)
+    .filter((x) => !x.done)
     .slice(0, 40)
-    .map((t) => `- ${t.title}${t.due ? ` [срок ${t.due}]` : ''}${t.priority === 'high' ? ' [важно]' : ''}`);
+    .map((x) => `- ${x.title}${x.due ? ` [${x.due}]` : ''}`);
   const today = todayKey();
   const events = d.events
     .filter((e) => e.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 15)
     .map((e) => `- ${e.date}${e.time ? ` ${e.time}` : ''}: ${e.title}`);
-  if (plans.length) text += `\n\nЕё планы:\n${plans.join('\n')}`;
-  if (tasks.length) text += `\n\nАктивные задачи:\n${tasks.join('\n')}`;
-  if (events.length) text += `\n\nБлижайшие события:\n${events.join('\n')}`;
+  const products = d.products
+    .slice(0, 20)
+    .map((p) => `- ${p.name}: ${money(p.price)} (${t('ws.costShort')} ${money(p.cost)})`);
+  if (plans.length) text += `\n\n${t('chat.sysPlans')}\n${plans.join('\n')}`;
+  if (tasks.length) text += `\n\n${t('chat.sysTasks')}\n${tasks.join('\n')}`;
+  if (events.length) text += `\n\n${t('chat.sysEvents')}\n${events.join('\n')}`;
+  if (products.length) text += `\n\n${t('chat.sysProducts')}\n${products.join('\n')}`;
   return text;
 }
 
@@ -67,7 +79,7 @@ function activeChat() {
 }
 
 function newChat() {
-  const chat = { id: uid(), title: 'Новый разговор', messages: [], createdAt: Date.now(), updatedAt: Date.now() };
+  const chat = { id: uid(), title: '', messages: [], createdAt: Date.now(), updatedAt: Date.now() };
   update((d) => d.chats.unshift(chat), { silent: true });
   activeChatId = chat.id;
   return chat;
@@ -76,18 +88,21 @@ function newChat() {
 function send(text) {
   text = text.trim();
   if (!text || streaming) return;
-  let chat = activeChat() || newChat();
+  const chat = activeChat() || newChat();
   update(
     () => {
       chat.messages.push({ role: 'user', content: text, ts: Date.now() });
-      if (chat.title === 'Новый разговор') chat.title = text.slice(0, 48) + (text.length > 48 ? '…' : '');
+      if (!chat.title) chat.title = text.slice(0, 48) + (text.length > 48 ? '…' : '');
       chat.updatedAt = Date.now();
     },
     { silent: true },
   );
   const reqId = uid();
   streaming = { reqId, chatId: chat.id, text: '' };
-  const history = chat.messages.slice(-20).map(({ role, content }) => ({ role, content }));
+  const history = chat.messages
+    .filter((m) => m.role === 'user' || m.role === 'assistant')
+    .slice(-20)
+    .map(({ role, content }) => ({ role, content }));
   window.api.startChat({
     id: reqId,
     model: state.data.settings.model,
@@ -127,8 +142,8 @@ export function initChatEvents() {
   window.api.onChatDone(({ id, text, aborted }) => {
     if (streaming?.reqId === id) finish(aborted ? streaming.text : text);
   });
-  window.api.onChatError(({ id, error }) => {
-    if (streaming?.reqId === id) finish(streaming.text, error);
+  window.api.onChatError(({ id, code, detail }) => {
+    if (streaming?.reqId === id) finish(streaming.text, chatErrorText(code, detail));
   });
 }
 
@@ -147,16 +162,16 @@ function keySetup(onDone) {
   const save = async () => {
     const key = input.value.trim();
     if (!key) return input.focus();
-    status.textContent = 'Проверяю ключ…';
+    status.textContent = t('chat.checkingKey');
     const res = await window.api.testKey(key);
     if (!res.ok) {
-      status.textContent = res.error;
+      status.textContent = chatErrorText(res.code, res.detail);
       status.className = 'small danger-text';
       return;
     }
     await window.api.setKey(key);
     keyStatus = await window.api.keyStatus();
-    toast('Ключ сохранён', 'success');
+    toast(t('chat.keySaved'), 'success');
     onDone();
   };
   input.addEventListener('keydown', (e) => e.key === 'Enter' && save());
@@ -164,15 +179,15 @@ function keySetup(onDone) {
     'div',
     { class: 'card key-setup' },
     h('div', { class: 'key-icon' }, icon('key', 26)),
-    h('h2', {}, 'Подключи ChatGPT'),
+    h('h2', {}, t('chat.connect')),
     h(
       'p',
       { class: 'muted' },
-      'Вставь свой API-ключ OpenAI. Его можно получить на ',
+      t('chat.keyHelp1'),
       h('a', { href: 'https://platform.openai.com/api-keys', target: '_blank' }, 'platform.openai.com/api-keys'),
-      '. Ключ хранится только на этом компьютере в зашифрованном виде.',
+      t('chat.keyHelp2'),
     ),
-    h('div', { class: 'key-row' }, input, h('button', { class: 'btn btn-primary', onclick: save }, 'Сохранить')),
+    h('div', { class: 'key-row' }, input, h('button', { class: 'btn btn-primary', onclick: save }, t('common.save'))),
     status,
   );
 }
@@ -186,26 +201,26 @@ export async function renderChat(root, params = {}) {
   const header = h(
     'div',
     { class: 'page-head' },
-    h('div', {}, h('h1', {}, 'ИИ-помощник'), h('div', { class: 'muted' }, 'Обсуди идеи, планы и следующие шаги')),
+    h('div', {}, h('h1', {}, t('nav.chat')), h('div', { class: 'muted' }, t('chat.subtitle'))),
     h(
       'div',
       { class: 'head-actions' },
       h(
         'label',
-        { class: 'toggle', title: 'Помощник будет видеть твои планы, задачи и события' },
+        { class: 'toggle', title: t('chat.contextHint') },
         h('input', {
           type: 'checkbox',
           checked: d.settings.chatUsesContext,
           onchange: (e) => update((x) => (x.settings.chatUsesContext = e.target.checked), { silent: true }),
         }),
         h('span', { class: 'toggle-track' }),
-        h('span', { class: 'small' }, 'Учитывать мои планы'),
+        h('span', { class: 'small' }, t('chat.useContext')),
       ),
       h(
         'select',
         {
           class: 'input select-sm',
-          title: 'Модель',
+          title: t('chat.model'),
           onchange: (e) => update((x) => (x.settings.model = e.target.value), { silent: true }),
         },
         MODELS.map((m) => h('option', { value: m.id, selected: m.id === d.settings.model }, m.label)),
@@ -232,7 +247,7 @@ export async function renderChat(root, params = {}) {
       'button',
       { class: 'btn btn-soft full', onclick: () => (newChat(), renderChat(root)) },
       icon('plus', 16),
-      'Новый разговор',
+      t('chat.new'),
     ),
     h(
       'div',
@@ -244,15 +259,15 @@ export async function renderChat(root, params = {}) {
             class: `chat-item${c.id === activeChatId ? ' active' : ''}`,
             onclick: () => ((activeChatId = c.id), renderChat(root)),
           },
-          h('span', { class: 'ellipsis' }, c.title),
+          h('span', { class: 'ellipsis' }, c.title || t('chat.new')),
           h(
             'button',
             {
               class: 'icon-btn small',
-              title: 'Удалить разговор',
+              title: t('common.delete'),
               onclick: async (e) => {
                 e.stopPropagation();
-                if (await confirmDialog(`Удалить разговор «${c.title}»?`)) {
+                if (await confirmDialog(t('chat.delete', { title: c.title || t('chat.new') }))) {
                   update((x) => (x.chats = x.chats.filter((y) => y.id !== c.id)), { silent: true });
                   if (activeChatId === c.id) activeChatId = null;
                   renderChat(root);
@@ -273,11 +288,13 @@ export async function renderChat(root, params = {}) {
       h(
         'div',
         { class: 'chat-welcome' },
-        emptyState('С чего начнём?', 'Выбери подсказку или напиши свой вопрос'),
+        emptyState(t('chat.welcome'), t('chat.welcomeHint')),
         h(
           'div',
           { class: 'suggestions' },
-          SUGGESTIONS.map((s) => h('button', { class: 'chip-btn', onclick: () => send(s) }, s)),
+          Array.from({ length: SUGGESTION_COUNT }, (_, i) => t(`chat.suggest.${i}`)).map((s) =>
+            h('button', { class: 'chip-btn', onclick: () => send(s) }, s),
+          ),
         ),
       ),
     );
@@ -303,19 +320,16 @@ export async function renderChat(root, params = {}) {
                 'button',
                 {
                   class: 'link small',
-                  onclick: () => {
-                    navigator.clipboard.writeText(m.content);
-                    toast('Скопировано');
-                  },
+                  onclick: () => (navigator.clipboard.writeText(m.content), toast(t('chat.copied'))),
                 },
-                'Копировать',
+                t('chat.copy'),
               ),
               h(
                 'button',
                 {
                   class: 'link small',
                   onclick: () => {
-                    const firstLine = m.content.split('\n').find((l) => l.trim()) || 'Из чата';
+                    const firstLine = m.content.split('\n').find((l) => l.trim()) || t('nav.chat');
                     createNote({
                       title: firstLine
                         .replace(/[#*_`>]/g, '')
@@ -324,10 +338,10 @@ export async function renderChat(root, params = {}) {
                       body: m.content,
                       color: 'lavender',
                     });
-                    toast('Сохранено в заметки', 'success');
+                    toast(t('chat.savedToNotes'), 'success');
                   },
                 },
-                'В заметки',
+                t('chat.toNotes'),
               ),
             )
           : null,
@@ -343,7 +357,7 @@ export async function renderChat(root, params = {}) {
   const input = h('textarea', {
     class: 'chat-input',
     rows: 1,
-    placeholder: 'Напиши сообщение… (Enter — отправить, Shift+Enter — новая строка)',
+    placeholder: t('chat.placeholder'),
     oninput: (e) => {
       e.target.style.height = 'auto';
       e.target.style.height = `${Math.min(e.target.scrollHeight, 180)}px`;
@@ -360,12 +374,12 @@ export async function renderChat(root, params = {}) {
   const sendBtn = streaming
     ? h(
         'button',
-        { class: 'btn btn-soft send-btn', title: 'Остановить', onclick: () => window.api.abortChat(streaming.reqId) },
+        { class: 'btn btn-soft send-btn', title: t('chat.stop'), onclick: () => window.api.abortChat(streaming.reqId) },
         icon('stop', 18),
       )
     : h(
         'button',
-        { class: 'btn btn-primary send-btn', title: 'Отправить', onclick: () => send(input.value) },
+        { class: 'btn btn-primary send-btn', title: t('chat.send'), onclick: () => send(input.value) },
         icon('send', 18),
       );
 

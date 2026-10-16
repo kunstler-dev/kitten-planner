@@ -9,29 +9,71 @@ function defaultData() {
   return {
     version: DATA_VERSION,
     profile: { name: '' },
+    business: {
+      company: '',
+      owner: '',
+      address: '',
+      email: '',
+      phone: '',
+      taxNumber: '',
+      vatId: '',
+      iban: '',
+      bic: '',
+      bank: '',
+      kleinunternehmer: true,
+    },
     notes: [],
     plans: [],
     tasks: [],
     events: [],
     chats: [],
+    // Launch roadmaps: per-step state keyed by step id, plus user-added steps.
+    launch: { legal: {}, commercial: {}, custom: [] },
+    materials: [],
+    products: [],
+    transactions: [],
+    invoices: [],
+    documents: [],
     settings: {
       model: 'gpt-4o-mini',
       kitten: true,
       kittenSpeed: 1,
       chatUsesContext: true,
+      lang: 'uk',
+      theme: 'light',
     },
   };
 }
+
+const ARRAY_KEYS = [
+  'notes',
+  'plans',
+  'tasks',
+  'events',
+  'chats',
+  'materials',
+  'products',
+  'transactions',
+  'invoices',
+  'documents',
+];
 
 /** Merge loaded data over defaults so new fields appear after updates. */
 function normalize(raw) {
   const base = defaultData();
   if (!raw || typeof raw !== 'object') return base;
   const out = { ...base };
-  for (const key of ['notes', 'plans', 'tasks', 'events', 'chats']) {
+  for (const key of ARRAY_KEYS) {
     out[key] = Array.isArray(raw[key]) ? raw[key] : [];
   }
   out.profile = { ...base.profile, ...(raw.profile || {}) };
+  out.business = { ...base.business, ...(raw.business || {}) };
+  const launch = raw.launch && typeof raw.launch === 'object' ? raw.launch : {};
+  out.launch = {
+    legal: launch.legal && typeof launch.legal === 'object' ? launch.legal : {},
+    commercial: launch.commercial && typeof launch.commercial === 'object' ? launch.commercial : {},
+    custom: Array.isArray(launch.custom) ? launch.custom : [],
+  };
   out.settings = { ...base.settings, ...(raw.settings || {}) };
   out.version = DATA_VERSION;
   return out;

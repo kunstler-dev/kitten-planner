@@ -1,7 +1,12 @@
-import { h, icon } from './ui.js';
 import { initState, subscribe, state } from './state.js';
-import { registerView, navigate, onRoute, route, getView } from './router.js';
+import { setLang } from './i18n.js';
+import { registerView, navigate, onRoute } from './router.js';
+import { renderNav, renderTopbar, renderView, NAV_GROUPS } from './app-shell.js';
 import { renderHome } from './views/home.js';
+import { renderLaunch } from './views/launch.js';
+import { renderWorkshop } from './views/workshop.js';
+import { renderFinance } from './views/finance.js';
+import { renderDocuments } from './views/documents.js';
 import { renderNotes } from './views/notes.js';
 import { renderTasks } from './views/tasks.js';
 import { renderCalendar } from './views/calendar.js';
@@ -9,46 +14,19 @@ import { renderChat, initChatEvents } from './views/chat.js';
 import { renderSettings } from './views/settings.js';
 import { initKitten } from './kitten.js';
 
-const NAV = [
-  { id: 'home', label: 'Главная', icon: 'home' },
-  { id: 'tasks', label: 'Планы и задачи', icon: 'tasks' },
-  { id: 'calendar', label: 'Календарь', icon: 'calendar' },
-  { id: 'notes', label: 'Заметки', icon: 'note' },
-  { id: 'chat', label: 'ИИ-помощник', icon: 'chat' },
-];
-
 registerView('home', renderHome);
-registerView('notes', renderNotes);
-registerView('tasks', renderTasks);
+registerView('legal', (root, params) => renderLaunch(root, { ...params, kind: 'legal' }));
+registerView('commercial', (root, params) => renderLaunch(root, { ...params, kind: 'commercial' }));
+registerView('workshop', renderWorkshop);
+registerView('finance', renderFinance);
+registerView('documents', renderDocuments);
+registerView('plans', renderTasks);
 registerView('calendar', renderCalendar);
+registerView('notes', renderNotes);
 registerView('chat', renderChat);
 registerView('settings', renderSettings);
 
 const view = document.getElementById('view');
-const nav = document.getElementById('nav');
-
-function renderNav() {
-  const item = (n) =>
-    h(
-      'button',
-      {
-        class: `nav-item${route.name === n.id ? ' active' : ''}`,
-        dataset: { view: n.id },
-        onclick: () => navigate(n.id),
-      },
-      icon(n.icon, 19),
-      h('span', {}, n.label),
-    );
-  nav.replaceChildren(
-    ...NAV.map(item),
-    h('div', { class: 'nav-spacer' }),
-    item({ id: 'settings', label: 'Настройки', icon: 'settings' }),
-  );
-}
-
-function renderView(params = route.params) {
-  getView(route.name)?.(view, params);
-}
 
 onRoute(() => {
   renderNav();
@@ -61,18 +39,23 @@ onRoute(() => {
 
 async function boot() {
   await initState();
+  setLang(state.data.settings.lang);
+  document.documentElement.dataset.theme = state.data.settings.theme;
   initChatEvents();
   subscribe(() => renderView({}));
   renderNav();
+  renderTopbar();
   renderView();
   initKitten({ enabled: state.data.settings.kitten, speed: state.data.settings.kittenSpeed });
 
+  // Ctrl+1..9 jumps between sections in sidebar order.
+  const order = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.id));
   document.addEventListener('keydown', (e) => {
     if (!e.ctrlKey || e.altKey) return;
     const idx = Number(e.key) - 1;
-    if (idx >= 0 && idx < NAV.length) {
+    if (idx >= 0 && idx < order.length) {
       e.preventDefault();
-      navigate(NAV[idx].id);
+      navigate(order[idx]);
     }
   });
   document.body.classList.add('ready');

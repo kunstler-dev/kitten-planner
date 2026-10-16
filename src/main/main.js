@@ -1,6 +1,8 @@
 'use strict';
 
+const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { app, BrowserWindow, ipcMain, shell, dialog, safeStorage, Menu } = require('electron');
 const { Store, normalize } = require('./store');
 const { Secrets } = require('./secrets');
@@ -10,27 +12,38 @@ if (process.env.KITTEN_PLANNER_DATA_DIR) {
   app.setPath('userData', process.env.KITTEN_PLANNER_DATA_DIR);
 }
 
-// Russian UI for built-in controls (date/time pickers, spellcheck, dialogs).
-app.commandLine.appendSwitch('lang', 'ru');
+const store = new Store(app.getPath('userData'));
+const docsDir = path.join(app.getPath('userData'), 'documents');
+
+// Built-in controls (date pickers, spellcheck) follow the saved UI language.
+const savedLang = store.load().settings.lang;
+app.commandLine.appendSwitch('lang', savedLang === 'de' ? 'de' : 'uk');
+// Lets the 3D kitten fall back to software WebGL on PCs/VMs without a usable GPU (content is local and trusted).
+app.commandLine.appendSwitch('enable-unsafe-swiftshader');
 
 const isDev = process.argv.includes('--dev');
-let store;
 let secrets;
 let mainWindow;
 const activeChats = new Map();
 
+const TITLEBAR = {
+  light: { color: '#f8f5f2', symbolColor: '#6e6378' },
+  dark: { color: '#1d1a22', symbolColor: '#cfc6da' },
+};
+
 function createWindow() {
+  const theme = store.load().settings.theme === 'dark' ? 'dark' : 'light';
   mainWindow = new BrowserWindow({
-    width: 1320,
-    height: 840,
-    minWidth: 980,
-    minHeight: 640,
+    width: 1360,
+    height: 860,
+    minWidth: 1040,
+    minHeight: 660,
     show: false,
-    backgroundColor: '#f8f5f2',
+    backgroundColor: TITLEBAR[theme].color,
     title: 'Kitten Planner',
     icon: path.join(__dirname, '..', 'renderer', 'assets', 'icon.png'),
     titleBarStyle: 'hidden',
-    titleBarOverlay: { color: '#f8f5f2', symbolColor: '#6e6378', height: 40 },
+    titleBarOverlay: { ...TITLEBAR[theme], height: 44 },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -44,7 +57,7 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => mainWindow.show());
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 
-  // Links from chat / notes open in the system browser, never inside the app.
+  // Links open in the system browser, never inside the app.
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https?:\/\//.test(url)) shell.openExternal(url);
     return { action: 'deny' };
@@ -55,6 +68,20 @@ function createWindow() {
       if (/^https?:\/\//.test(url)) shell.openExternal(url);
     }
   });
+}
+
+/** Resolve a stored document name inside docsDir, rejecting path traversal. */
+function docPath(stored) {
+  const name = path.basename(String(stored || ''));
+  if (!name || name !== stored) throw new Error('invalid document name');
+  return path.join(docsDir, name);
+}
+
+async function saveWithDialog({ title, defaultPath, filters, write }) {
+  const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, { title, defaultPath, filters });
+  if (canceled || !filePath) return false;
+  await write(filePath);
+  return true;
 }
 
 function registerIpc() {
@@ -78,7 +105,7 @@ function registerIpc() {
       await testKey({ apiKey: key || secrets.get() });
       return { ok: true };
     } catch (err) {
-      return { ok: false, error: err.message };
+      return { ok: false, code: err.code || 'network', detail: err.detail || '' };
     }
   });
 
@@ -99,13 +126,7 @@ function registerIpc() {
       send('chat:done', { text });
     } catch (err) {
       if (err.name === 'AbortError') send('chat:done', { aborted: true });
-      else {
-        const msg =
-          err.cause?.code === 'ENOTFOUND' || err.message === 'fetch failed'
-            ? 'Нет соединения с интернетом или OpenAI недоступен.'
-            : err.message;
-        send('chat:error', { error: msg });
-      }
+      else send('chat:error', { code: err.code || 'network', detail: err.detail || '' });
     } finally {
       activeChats.delete(id);
     }
@@ -117,33 +138,91 @@ function registerIpc() {
   });
 
   ipcMain.handle('app:open-data-folder', () => shell.openPath(app.getPath('userData')));
-  ipcMain.handle('app:info', () => ({
-    version: app.getVersion(),
-    dataDir: app.getPath('userData'),
-  }));
-
-  ipcMain.handle('data:export', async (_e, data) => {
-    const stamp = new Date().toISOString().slice(0, 10);
-    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
-      title: 'Сохранить резервную копию',
-      defaultPath: `kitten-planner-backup-${stamp}.json`,
-      filters: [{ name: 'JSON', extensions: ['json'] }],
-    });
-    if (canceled || !filePath) return false;
-    require('node:fs').writeFileSync(filePath, JSON.stringify(normalize(data), null, 2), 'utf8');
+  ipcMain.handle('app:info', () => ({ version: app.getVersion(), dataDir: app.getPath('userData') }));
+  ipcMain.handle('app:set-theme', (_e, theme) => {
+    const colors = TITLEBAR[theme] || TITLEBAR.light;
+    try {
+      mainWindow.setTitleBarOverlay?.({ ...colors, height: 44 });
+    } catch {
+      // not supported on this platform
+    }
+    mainWindow.setBackgroundColor(colors.color);
     return true;
   });
-  ipcMain.handle('data:import', async () => {
+
+  ipcMain.handle('data:export', (_e, { data, title }) =>
+    saveWithDialog({
+      title,
+      defaultPath: `kitten-planner-backup-${new Date().toISOString().slice(0, 10)}.json`,
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+      write: (file) => fs.writeFileSync(file, JSON.stringify(normalize(data), null, 2), 'utf8'),
+    }),
+  );
+  ipcMain.handle('data:import', async (_e, { title }) => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-      title: 'Восстановить из резервной копии',
+      title,
       properties: ['openFile'],
       filters: [{ name: 'JSON', extensions: ['json'] }],
     });
     if (canceled || !filePaths[0]) return null;
-    const raw = JSON.parse(require('node:fs').readFileSync(filePaths[0], 'utf8'));
-    const data = normalize(raw);
+    const data = normalize(JSON.parse(fs.readFileSync(filePaths[0], 'utf8')));
     store.save(data);
     return data;
+  });
+
+  ipcMain.handle('file:save-text', (_e, { content, defaultPath, title, ext }) =>
+    saveWithDialog({
+      title,
+      defaultPath,
+      filters: [{ name: ext.toUpperCase(), extensions: [ext] }],
+      // BOM so Excel opens UTF-8 CSV with umlauts correctly
+      write: (file) => fs.writeFileSync(file, (ext === 'csv' ? '﻿' : '') + content, 'utf8'),
+    }),
+  );
+
+  // Renders an HTML string (invoice) to PDF in a hidden, script-less window.
+  ipcMain.handle('pdf:save', async (_e, { html, defaultPath, title }) => {
+    const win = new BrowserWindow({
+      show: false,
+      webPreferences: { sandbox: true, javascript: false, contextIsolation: true },
+    });
+    try {
+      await win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
+      const pdf = await win.webContents.printToPDF({ pageSize: 'A4', printBackground: true });
+      return await saveWithDialog({
+        title,
+        defaultPath,
+        filters: [{ name: 'PDF', extensions: ['pdf'] }],
+        write: async (file) => {
+          fs.writeFileSync(file, pdf);
+          shell.openPath(file);
+        },
+      });
+    } finally {
+      win.destroy();
+    }
+  });
+
+  ipcMain.handle('docs:add', async (_e, { title }) => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title,
+      properties: ['openFile', 'multiSelections'],
+    });
+    if (canceled) return [];
+    fs.mkdirSync(docsDir, { recursive: true });
+    return filePaths.map((src) => {
+      const name = path.basename(src);
+      const stored = `${crypto.randomBytes(5).toString('hex')}_${name.replace(/[^\w.\-() ]+/g, '_')}`;
+      fs.copyFileSync(src, path.join(docsDir, stored));
+      return { name, stored, size: fs.statSync(src).size };
+    });
+  });
+  ipcMain.handle('docs:open', (_e, stored) => shell.openPath(docPath(stored)));
+  ipcMain.handle('docs:show', (_e, stored) => shell.showItemInFolder(docPath(stored)));
+  ipcMain.handle('docs:remove', (_e, stored) => {
+    const file = docPath(stored);
+    if (fs.existsSync(file)) fs.unlinkSync(file);
+    return true;
   });
 }
 
@@ -160,7 +239,6 @@ if (!gotLock) {
 
   app.whenReady().then(() => {
     Menu.setApplicationMenu(null);
-    store = new Store(app.getPath('userData'));
     secrets = new Secrets(app.getPath('userData'), safeStorage);
     registerIpc();
     createWindow();

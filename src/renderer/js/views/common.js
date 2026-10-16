@@ -2,11 +2,12 @@
 import { h, icon } from '../ui.js';
 import { state, update } from '../state.js';
 import { humanDate, todayKey } from '../dates.js';
+import { t } from '../i18n.js';
 
 export const PRIORITIES = {
-  high: { label: 'Важно', cls: 'prio-high' },
-  normal: { label: 'Обычно', cls: 'prio-normal' },
-  low: { label: 'Неспешно', cls: 'prio-low' },
+  high: { label: () => t('prio.high'), cls: 'prio-high' },
+  normal: { label: () => t('prio.normal'), cls: 'prio-normal' },
+  low: { label: () => t('prio.low'), cls: 'prio-low' },
 };
 
 export function planById(id) {
@@ -57,7 +58,7 @@ export function taskRow(task, { onEdit, onDelete, showPlan = true } = {}) {
       'button',
       {
         class: 'check',
-        title: task.done ? 'Вернуть в работу' : 'Отметить выполненной',
+        title: task.done ? t('task.undo') : t('task.markDone'),
         onclick: (e) => {
           e.currentTarget.classList.add('pop');
           toggleTask(task.id);
@@ -75,7 +76,7 @@ export function taskRow(task, { onEdit, onDelete, showPlan = true } = {}) {
         task.due
           ? h('span', { class: `chip${overdue ? ' chip-danger' : ''}` }, icon('clock', 12), humanDate(task.due))
           : null,
-        task.priority !== 'normal' ? h('span', { class: `chip ${prio.cls}` }, icon('flag', 12), prio.label) : null,
+        task.priority !== 'normal' ? h('span', { class: `chip ${prio.cls}` }, icon('flag', 12), prio.label()) : null,
         plan ? h('span', { class: `chip chip-plan c-${plan.color}` }, plan.title) : null,
         task.notes ? h('span', { class: 'muted small ellipsis' }, task.notes) : null,
       ),
@@ -85,10 +86,14 @@ export function taskRow(task, { onEdit, onDelete, showPlan = true } = {}) {
           'div',
           { class: 'row-actions' },
           onEdit
-            ? h('button', { class: 'icon-btn', title: 'Изменить', onclick: () => onEdit(task) }, icon('edit', 16))
+            ? h('button', { class: 'icon-btn', title: t('common.edit'), onclick: () => onEdit(task) }, icon('edit', 16))
             : null,
           onDelete
-            ? h('button', { class: 'icon-btn', title: 'Удалить', onclick: () => onDelete(task) }, icon('trash', 16))
+            ? h(
+                'button',
+                { class: 'icon-btn', title: t('common.delete'), onclick: () => onDelete(task) },
+                icon('trash', 16),
+              )
             : null,
         )
       : null,

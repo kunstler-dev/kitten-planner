@@ -1,4 +1,5 @@
 // Small DOM toolkit: element builder, icons, modals, toasts.
+import { t } from './i18n.js';
 
 export function h(tag, attrs = {}, ...children) {
   const el = document.createElement(tag);
@@ -47,6 +48,22 @@ const ICONS = {
   download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   upload: '<path d="M12 20V9M7 14l5-5 5 5M5 4h14"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  scale: '<path d="M12 4v16M7 20h10M5 7h14M12 4l-1 3M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/>',
+  store:
+    '<path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"/><path d="M5 11.5V20h14v-8.5M10 20v-5h4v5"/>',
+  book: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/><path d="M9 7h6"/>',
+  wallet:
+    '<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2.5"/><circle cx="16" cy="13.5" r="1.2"/>',
+  docs: '<path d="M8 3h8l4 4v11H8z"/><path d="M16 3v4h4"/><path d="M4 7v14h12"/>',
+  moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  invoice: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  box: '<path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>',
+  arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  arrowDown: '<path d="M12 5v14M6 13l6 6 6-6"/>',
+  eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
 };
 
 export function icon(name, size = 18) {
@@ -57,7 +74,7 @@ export function icon(name, size = 18) {
 }
 
 export function toast(message, kind = 'info') {
-  let host = document.getElementById('toasts');
+  const host = document.getElementById('toasts');
   const el = h('div', { class: `toast toast-${kind}` }, message);
   host.append(el);
   requestAnimationFrame(() => el.classList.add('show'));
@@ -90,7 +107,7 @@ export function modal({ title, build, width = 460 }) {
         'div',
         { class: 'modal-head' },
         h('h3', {}, title),
-        h('button', { class: 'icon-btn', title: 'Закрыть', onclick: () => close(undefined) }, icon('close')),
+        h('button', { class: 'icon-btn', title: t('common.close'), onclick: () => close(undefined) }, icon('close')),
       ),
       build(close),
     );
@@ -107,9 +124,10 @@ export function modal({ title, build, width = 460 }) {
   });
 }
 
-export function confirmDialog(text, { okText = 'Удалить', danger = true } = {}) {
+export function confirmDialog(text, { okText, danger = true } = {}) {
+  okText = okText || t('common.delete');
   return modal({
-    title: 'Подтвердите',
+    title: t('common.confirmTitle'),
     width: 380,
     build: (close) =>
       h(
@@ -119,7 +137,7 @@ export function confirmDialog(text, { okText = 'Удалить', danger = true }
         h(
           'div',
           { class: 'modal-actions' },
-          h('button', { class: 'btn btn-ghost', onclick: () => close(false) }, 'Отмена'),
+          h('button', { class: 'btn btn-ghost', onclick: () => close(false) }, t('common.cancel')),
           h('button', { class: `btn ${danger ? 'btn-danger' : 'btn-primary'}`, onclick: () => close(true) }, okText),
         ),
       ),
@@ -131,14 +149,7 @@ export function field(label, control) {
   return h('label', { class: 'field' }, h('span', { class: 'field-label' }, label), control);
 }
 
-export const COLORS = [
-  { id: 'lavender', name: 'Лаванда' },
-  { id: 'powder', name: 'Пудра' },
-  { id: 'peach', name: 'Персик' },
-  { id: 'mint', name: 'Мята' },
-  { id: 'sky', name: 'Небо' },
-  { id: 'cream', name: 'Крем' },
-];
+export const COLORS = ['lavender', 'powder', 'peach', 'mint', 'sky', 'cream'];
 
 export function colorPicker(value, onChange) {
   const wrap = h('div', { class: 'color-picker' });
@@ -147,11 +158,11 @@ export function colorPicker(value, onChange) {
       ...COLORS.map((c) =>
         h('button', {
           type: 'button',
-          class: `swatch c-${c.id}${c.id === value ? ' active' : ''}`,
-          title: c.name,
+          class: `swatch c-${c}${c === value ? ' active' : ''}`,
+          title: t(`color.${c}`),
           onclick: () => {
-            value = c.id;
-            onChange(c.id);
+            value = c;
+            onChange(c);
             render();
           },
         }),
@@ -170,4 +181,48 @@ export function emptyState(text, sub) {
     h('div', { class: 'empty-title' }, text),
     sub ? h('div', { class: 'muted small' }, sub) : null,
   );
+}
+
+/** Button row of mutually exclusive options. */
+export function segmented(options, value, onChange) {
+  const wrap = h('div', { class: 'segmented' });
+  const render = () =>
+    wrap.replaceChildren(
+      ...options.map((o) =>
+        h(
+          'button',
+          {
+            type: 'button',
+            class: o.value === value ? 'active' : '',
+            onclick: () => {
+              value = o.value;
+              onChange(o.value);
+              render();
+            },
+          },
+          o.label,
+        ),
+      ),
+    );
+  render();
+  return wrap;
+}
+
+export function select(options, value, onChange, attrs = {}) {
+  return h(
+    'select',
+    { class: 'input', ...attrs, onchange: (e) => onChange(e.target.value) },
+    options.map((o) => h('option', { value: o.value, selected: String(o.value) === String(value) }, o.label)),
+  );
+}
+
+export function numberInput(value, onChange, attrs = {}) {
+  return h('input', {
+    class: 'input',
+    type: 'number',
+    value,
+    ...attrs,
+    // commit on change (blur/Enter) so re-renders don't steal focus while typing
+    onchange: (e) => onChange(e.target.value === '' ? 0 : Number(e.target.value)),
+  });
 }

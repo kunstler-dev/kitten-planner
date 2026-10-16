@@ -27,17 +27,26 @@ function parseSSE(buffer) {
   return { deltas, rest, done };
 }
 
-function describeError(status, body) {
-  let message;
-  try {
-    message = JSON.parse(body).error?.message || '';
-  } catch {
-    message = body?.slice(0, 300) || '';
+/** Error with a stable `code` the renderer translates; `detail` is OpenAI's own message. */
+class ChatError extends Error {
+  constructor(code, detail = '') {
+    super(detail || code);
+    this.code = code;
+    this.detail = detail;
   }
-  if (status === 401) return 'Неверный API-ключ. Проверьте его в настройках.';
-  if (status === 429) return `Превышен лимит запросов или закончился баланс. ${message}`.trim();
-  if (status === 404) return `Модель недоступна для этого ключа. ${message}`.trim();
-  return `Ошибка OpenAI (${status}). ${message}`.trim();
+}
+
+function describeError(status, body) {
+  let detail;
+  try {
+    detail = JSON.parse(body).error?.message || '';
+  } catch {
+    detail = body?.slice(0, 300) || '';
+  }
+  if (status === 401) return new ChatError('bad_key', detail);
+  if (status === 429) return new ChatError('rate_limit', detail);
+  if (status === 404) return new ChatError('model', detail);
+  return new ChatError('http', `${status} ${detail}`.trim());
 }
 
 /**
@@ -45,7 +54,7 @@ function describeError(status, body) {
  * Resolves with the full text.
  */
 async function streamChat({ apiKey, model, messages, signal, onDelta, fetchImpl = fetch }) {
-  if (!apiKey) throw new Error('Добавьте API-ключ OpenAI в настройках чата.');
+  if (!apiKey) throw new ChatError('no_key');
   const res = await fetchImpl(API_URL, {
     method: 'POST',
     signal,
@@ -56,7 +65,7 @@ async function streamChat({ apiKey, model, messages, signal, onDelta, fetchImpl 
     body: JSON.stringify({ model, messages, stream: true }),
   });
   if (!res.ok) {
-    throw new Error(describeError(res.status, await res.text()));
+    throw describeError(res.status, await res.text());
   }
   const decoder = new TextDecoder();
   let buffer = '';
@@ -78,8 +87,8 @@ async function testKey({ apiKey, fetchImpl = fetch }) {
   const res = await fetchImpl('https://api.openai.com/v1/models', {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
-  if (!res.ok) throw new Error(describeError(res.status, await res.text()));
+  if (!res.ok) throw describeError(res.status, await res.text());
   return true;
 }
 
-module.exports = { streamChat, testKey, parseSSE, describeError };
+module.exports = { streamChat, testKey, parseSSE, describeError, ChatError };
